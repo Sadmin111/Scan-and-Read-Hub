@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Barcode Reader</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f2f4f7;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* BACKGROUND ANIMATION WRAPPER - DUMMY BARCODES */
+    .barcode-floating-bg {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .float-barcode {
+        position: absolute;
+        opacity: 0.12;
+        animation: floatUp linear infinite;
+        filter: blur(1px);
+        border-radius: 4px;
+        background: repeating-linear-gradient(
+            90deg,
+            #000 0px,
+            #000 3px,
+            #fff 3px,
+            #fff 6px
+        );
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(100vh) rotate(0deg); }
+        100% { transform: translateY(-120vh) rotate(6deg); }
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 360px;
+        background: #ffffff;
+        padding: 60px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        text-align: center;
+        animation: fadeIn 0.6s ease;
+        z-index: 10;
+        position: relative;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+    }
+
+    .subtitle {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 12px;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background: #6366f1;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+    button:hover {
+        background: #4f46e5;
+    }
+
+    button.secondary {
+        background: #e5e7eb;
+        color: #111827;
+        font-weight: 500;
+    }
+
+    button.secondary:hover {
+        background: #d1d5db;
+    }
+
+    .button-row {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .button-row button {
+        width: 100%;
+        margin-top: 0;
+    }
+
+    #videoWrapper {
+        margin-top: 20px;
+        width: 260px;
+        height: 200px;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 2px solid #e5e7eb;
+        display: none;
+        position: relative;
+        background: #000;
+    }
+
+    #videoWrapper video,
+    #videoWrapper canvas {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .video-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        box-shadow: 0 0 0 9999px rgba(0,0,0,0.20);
+        border: 2px dashed rgba(255,255,255,0.9);
+        pointer-events: none;
+    }
+
+    #resultBox {
+        margin-top: 18px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px dashed #d1d5db;
+        background: #f9fafb;
+        font-size: 13px;
+        color: #374151;
+        width: 100%;
+        word-break: break-all;
+        display: none;
+        text-align: left;
+    }
+
+    #resultLabel {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #9ca3af;
+        margin-bottom: 4px;
+    }
+
+    #resultText {
+        font-size: 13px;
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .result-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .result-actions button {
+        margin-top: 0;
+        padding: 10px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
+
+    .open-btn {
+        background: #10b981;
+    }
+
+    .open-btn:hover {
+        background: #059669;
+    }
+
+    .copy-btn {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .copy-btn:hover {
+        background: #d1d5db;
+    }
+
+    .status-text {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .status-text.error {
+        color: #b91c1c;
+    }
+
+    #hiddenCanvas {
+        display: none;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="barcode-floating-bg" id="bgBarcodeContainer"></div>
+
+<div class="container">
+    <div class="title">Barcode Reader</div>
+    <div class="subtitle">Scan with camera or upload a barcode image.</div>
+
+    <div id="videoWrapper">
+        <div class="video-overlay"></div>
+    </div>
+
+    <div class="button-row">
+        <button id="startBtn">Start Scanning</button>
+        <button id="stopBtn" class="secondary" style="display:none;">Stop</button>
+    </div>
+
+    <button id="uploadBtn" class="secondary">Upload Barcode Image</button>
+    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+
+    <div id="resultBox">
+        <div id="resultLabel">Scanned Result</div>
+        <div id="resultText"></div>
+        <div class="result-actions">
+            <button class="open-btn" id="openBtn" style="display:none;">Open in New Tab</button>
+            <button class="copy-btn" id="copyBtn">Copy</button>
+        </div>
+    </div>
+
+    <div id="status" class="status-text">Camera is idle. Use "Start Scanning" or "Upload Barcode Image".</div>
+</div>
+
+<canvas id="hiddenCanvas"></canvas>
+
+<script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.js"></script>
+
+<script>
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    const videoWrapper = document.getElementById('videoWrapper');
+    const statusText = document.getElementById('status');
+    const resultBox = document.getElementById('resultBox');
+    const resultText = document.getElementById('resultText');
+    const openBtn = document.getElementById('openBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const hiddenCanvas = document.getElementById('hiddenCanvas');
+
+    let scanning = false;
+    let detectedOnce = false;
+
+    // background dummy barcodes
+    function generateFloatingBarcodes() {
+        const container = document.getElementById("bgBarcodeContainer");
+        container.innerHTML = "";
+
+        for (let i = 0; i < 12; i++) {
+            const bar = document.createElement("div");
+            bar.className = "float-barcode";
+
+            const width = Math.random() * 80 + 60;
+            const height = Math.random() * 40 + 40;
+            const left = Math.random() * 100;
+            const duration = Math.random() * 10 + 10;
+            const delay = Math.random() * 6;
+
+            bar.style.width = width + "px";
+            bar.style.height = height + "px";
+            bar.style.left = left + "vw";
+            bar.style.animationDuration = duration + "s";
+            bar.style.animationDelay = delay + "s";
+
+            container.appendChild(bar);
+        }
+    }
+    generateFloatingBarcodes();
+
+    function isValidUrl(str) {
+        try {
+            new URL(str);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+
+    function handleResult(data) {
+        if (!data) return;
+
+        resultBox.style.display = "block";
+        resultText.textContent = data;
+
+        if (isValidUrl(data)) {
+            openBtn.style.display = "inline-block";
+            openBtn.onclick = () => window.open(data, "_blank");
+        } else {
+            openBtn.style.display = "none";
+        }
+    }
+
+    function onDetected(result) {
+        if (!result || !result.codeResult || !result.codeResult.code) return;
+        if (detectedOnce) return;
+
+        detectedOnce = true;
+        const code = result.codeResult.code;
+
+        statusText.textContent = "Barcode detected!";
+        statusText.classList.remove('error');
+        handleResult(code);
+        stopScanning();
+    }
+
+    function startScanning() {
+        if (scanning) return;
+        scanning = true;
+        detectedOnce = false;
+
+        videoWrapper.style.display = "block";
+        stopBtn.style.display = "block";
+        startBtn.style.display = "none";
+        statusText.textContent = "Point the camera at a barcode...";
+        statusText.classList.remove('error');
+
+        Quagga.init({
+            inputStream: {
+                type: "LiveStream",
+                target: videoWrapper,
+                constraints: { facingMode: "environment" }
+            },
+            locator: {
+                patchSize: "medium",
+                halfSample: true
+            },
+            decoder: {
+                readers: [
+                    "code_128_reader",
+                    "ean_reader",
+                    "ean_8_reader",
+                    "code_39_reader",
+                    "upc_reader",
+                    "upc_e_reader",
+                    "codabar_reader"
+                ]
+            },
+            locate: true
+        }, function(err) {
+            if (err) {
+                console.error(err);
+                statusText.textContent = "Camera access denied or unavailable.";
+                statusText.classList.add('error');
+                stopScanning();
+                return;
+            }
+            Quagga.start();
+            Quagga.onDetected(onDetected);
+        });
+    }
+
+    function stopScanning() {
+        if (!scanning) return;
+        scanning = false;
+
+        try {
+            Quagga.offDetected(onDetected);
+            Quagga.stop();
+        } catch (e) {}
+
+        videoWrapper.style.display = "none";
+        stopBtn.style.display = "none";
+        startBtn.style.display = "block";
+        statusText.textContent = "Camera is idle. Use \"Start Scanning\" or \"Upload Barcode Image\".";
+        statusText.classList.remove('error');
+    }
+
+    // ---- multi-attempt decode for uploaded images ----
+    function tryDecodeWithConfigs(dataUrl) {
+        const configs = [
+            { // 1: focus CODE128, aggressive locator
+                locator: { patchSize: "large", halfSample: false },
+                decoder: { readers: ["code_128_reader"] }
+            },
+            { // 2: x-large patch
+                locator: { patchSize: "x-large", halfSample: false },
+                decoder: { readers: ["code_128_reader"] }
+            },
+            { // 3: multiple readers
+                locator: { patchSize: "large", halfSample: false },
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "code_39_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "codabar_reader"
+                    ]
+                }
+            }
+        ];
+
+        let index = 0;
+
+        function attemptNext() {
+            if (index >= configs.length) {
+                statusText.textContent = "No barcode found in the uploaded image.";
+                statusText.classList.add('error');
+                return;
+            }
+
+            const cfg = configs[index++];
+            Quagga.decodeSingle({
+                src: dataUrl,
+                numOfWorkers: 0,
+                inputStream: {
+                    size: 1024,
+                    singleChannel: false
+                },
+                locator: cfg.locator,
+                decoder: cfg.decoder,
+                locate: true
+            }, function(result) {
+                if (result && result.codeResult && result.codeResult.code) {
+                    statusText.textContent = "Barcode detected from image!";
+                    statusText.classList.remove('error');
+                    handleResult(result.codeResult.code);
+                } else {
+                    attemptNext(); // try next config
+                }
+            });
+        }
+
+        attemptNext();
+    }
+
+    // ---- Upload & scan image ----
+    uploadBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        if (scanning) stopScanning();
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                // upscale to help detection
+                const scale = 3;
+                const ctx = hiddenCanvas.getContext('2d');
+                hiddenCanvas.width = img.width * scale;
+                hiddenCanvas.height = img.height * scale;
+                ctx.drawImage(img, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+                const dataURL = hiddenCanvas.toDataURL('image/png');
+                statusText.textContent = "Processing uploaded image...";
+                statusText.classList.remove('error');
+                tryDecodeWithConfigs(dataURL);
+            };
+            img.onerror = function() {
+                statusText.textContent = "Could not read the image file.";
+                statusText.classList.add('error');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        fileInput.value = "";
+    });
+
+    // Copy button
+    copyBtn.addEventListener('click', async () => {
+        const text = resultText.textContent;
+        if (!text) return;
+
+        try {
+            await navigator.clipboard.writeText(text);
+            statusText.textContent = "Result copied to clipboard.";
+            statusText.classList.remove('error');
+        } catch (err) {
+            statusText.textContent = "Unable to copy. Please copy manually.";
+            statusText.classList.add('error');
+        }
+    });
+
+    startBtn.addEventListener('click', startScanning);
+    stopBtn.addEventListener('click', stopScanning);
+
+    window.addEventListener('beforeunload', () => {
+        if (scanning) stopScanning();
+    });
+</script>
+
+</body>
+</html>
