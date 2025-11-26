@@ -209,6 +209,7 @@
       background: radial-gradient(circle at top left, #0f172a 0, #020617 55%);
       font-size: 0.8rem;
       color: var(--text-muted);
+      margin-top: 1rem;
     }
 
     .hero-badge span {
@@ -601,6 +602,126 @@
       outline: 2px solid #22c55e;
       outline-offset: 3px;
     }
+
+    /* ===== Mobile tweaks ===== */
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+
+      .app-shell {
+        padding: 1.25rem 1.1rem 1.5rem;
+        border-radius: 1.25rem;
+      }
+
+      .app-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .header-pill {
+        align-self: stretch;
+        justify-content: center;
+      }
+
+      .hero {
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero-text h1 {
+        font-size: 1.6rem;
+        line-height: 1.15;
+      }
+
+      .hero-subtitle {
+        font-size: 0.9rem;
+      }
+
+      .chip-row {
+        gap: 0.4rem;
+      }
+
+      .chip {
+        font-size: 0.72rem;
+        padding: 0.3rem 0.6rem;
+      }
+
+      .hero-visual {
+        margin-top: 0.5rem;
+        min-height: 180px;
+        padding: 1rem;
+      }
+
+      .visual-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .visual-code {
+        max-width: 100%;
+        font-size: 0.7rem;
+        overflow-x: auto;
+      }
+
+      .visual-burst {
+        align-self: flex-end;
+        margin-top: 0.4rem;
+      }
+
+      .visual-stats {
+        flex-wrap: wrap;
+        gap: 0.7rem;
+      }
+
+      .options-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+      }
+
+      .options-section-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+      }
+
+      .options-grid {
+        gap: 0.85rem;
+      }
+
+      .option-card {
+        padding: 0.9rem;
+        border-radius: 1.1rem;
+      }
+
+      .option-title {
+        font-size: 0.9rem;
+      }
+
+      .option-desc {
+        font-size: 0.78rem;
+      }
+
+      .option-footer {
+        font-size: 0.72rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+      }
+
+      .app-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+      }
+    }
   </style>
 </head>
 <body>
@@ -643,7 +764,7 @@
             <span class="chip"><strong>No data</strong> stored on server</span>
           </div>
 
-            <div class="hero-badge">
+          <div class="hero-badge">
             <div class="badge-glow"></div>
             <span>Tip:</span> Click any card below to open the
             <span>Generator</span> or <span>Reader</span> in your preferred
@@ -707,91 +828,87 @@ scanCode({
         <div class="options-grid" id="options-grid">
           <!-- Option 1: QR Generator -->
           <article
-  class="option-card"
-  tabindex="0"
-  data-type="qr"
-  data-action="open-qr-generator"
->
-  <div class="option-title">
-    <span>QR Generator</span>
-    <span class="option-icon">▢▢</span>
-  </div>
-  <p class="option-desc">
-    Create high-resolution QR codes for links, text, Wi-Fi, and more.
-    Perfect for print, packaging, and digital campaigns.
-  </p>
-  <div class="option-footer">
-    <span class="tag">Export: PNG / SVG</span>
-    <span class="badge">Most used</span>
-  </div>
-</article>
-
+            class="option-card"
+            tabindex="0"
+            data-type="qr"
+            data-action="open-qr-generator"
+          >
+            <div class="option-title">
+              <span>QR Generator</span>
+              <span class="option-icon">▢▢</span>
+            </div>
+            <p class="option-desc">
+              Create high-resolution QR codes for links, text, Wi-Fi, and more.
+              Perfect for print, packaging, and digital campaigns.
+            </p>
+            <div class="option-footer">
+              <span class="tag">Export: PNG / SVG</span>
+              <span class="badge">Most used</span>
+            </div>
+          </article>
 
           <!-- Option 2: QR Reader -->
-<article
-  class="option-card"
-  tabindex="0"
-  data-type="qr"
-  data-action="open-qr-reader"
->
-  <div class="option-title">
-    <span>QR Reader</span>
-    <span class="option-icon">📷</span>
-  </div>
-  <p class="option-desc">
-    Scan QR codes directly from your camera or upload images. Get
-    instant decoded results with copy & open-link shortcuts.
-  </p>
-  <div class="option-footer">
-    <span class="tag">Camera + Upload</span>
-    <span>Low-light optimized</span>
-  </div>
-</article>
-
+          <article
+            class="option-card"
+            tabindex="0"
+            data-type="qr"
+            data-action="open-qr-reader"
+          >
+            <div class="option-title">
+              <span>QR Reader</span>
+              <span class="option-icon">📷</span>
+            </div>
+            <p class="option-desc">
+              Scan QR codes directly from your camera or upload images. Get
+              instant decoded results with copy & open-link shortcuts.
+            </p>
+            <div class="option-footer">
+              <span class="tag">Camera + Upload</span>
+              <span>Low-light optimized</span>
+            </div>
+          </article>
 
           <!-- Option 3: Barcode Generator -->
           <article
-  class="option-card"
-  tabindex="0"
-  data-type="barcode"
-  data-action="open-barcode-generator"
->
-  <div class="option-title">
-    <span>Barcode Generator</span>
-    <span class="option-icon">▮▯▮▮▯</span>
-  </div>
-  <p class="option-desc">
-    Generate retail-ready barcodes (EAN, Code128, UPC and more) with
-    precise sizing and print-friendly output.
-  </p>
-  <div class="option-footer">
-    <span class="tag">Retail • Inventory</span>
-    <span>Vector-sharp lines</span>
-  </div>
-</article>
-
+            class="option-card"
+            tabindex="0"
+            data-type="barcode"
+            data-action="open-barcode-generator"
+          >
+            <div class="option-title">
+              <span>Barcode Generator</span>
+              <span class="option-icon">▮▯▮▮▯</span>
+            </div>
+            <p class="option-desc">
+              Generate retail-ready barcodes (EAN, Code128, UPC and more) with
+              precise sizing and print-friendly output.
+            </p>
+            <div class="option-footer">
+              <span class="tag">Retail • Inventory</span>
+              <span>Vector-sharp lines</span>
+            </div>
+          </article>
 
           <!-- Option 4: Barcode Reader -->
-<article
-  class="option-card"
-  tabindex="0"
-  data-type="barcode"
-  data-action="open-barcode-reader"
->
-  <div class="option-title">
-    <span>Barcode Reader</span>
-    <span class="option-icon">📡</span>
-  </div>
-  <p class="option-desc">
-    Decode barcodes from camera streams or uploaded images. Ideal for
-    inventory checks, product lookups and logistics tools.
-  </p>
-  <div class="option-footer">
-    <span class="tag">Multi-format scan</span>
-    <span>Batch scans coming soon</span>
-  </div>
-</article>
-
+          <article
+            class="option-card"
+            tabindex="0"
+            data-type="barcode"
+            data-action="open-barcode-reader"
+          >
+            <div class="option-title">
+              <span>Barcode Reader</span>
+              <span class="option-icon">📡</span>
+            </div>
+            <p class="option-desc">
+              Decode barcodes from camera streams or uploaded images. Ideal for
+              inventory checks, product lookups and logistics tools.
+            </p>
+            <div class="option-footer">
+              <span class="tag">Multi-format scan</span>
+              <span>Batch scans coming soon</span>
+            </div>
+          </article>
         </div>
       </section>
     </main>
@@ -829,9 +946,7 @@ scanCode({
       grid.style.gap = "0.6rem";
     });
 
-    // Mode switcher (visual only, hook for future settings)
-
-    // Click handlers for cards – plug your routing / modals here
+    // Click handlers for cards – open tools in new tabs
     const optionCards = document.querySelectorAll(".option-card");
 
     optionCards.forEach((card) => {
@@ -849,27 +964,24 @@ scanCode({
       });
     });
 
-function handleToolOpen(action) {
-  switch (action) {
-    case "open-qr-generator":
-      window.open("QR.html", "_blank");
-      break;
-    case "open-qr-reader":
-      window.open("QR reader.html", "_blank");
-      break;
-    case "open-barcode-generator":
-      window.open("Bar Code.html", "_blank");
-      break;
-    case "open-barcode-reader":
-      window.open("Bar Code Reader.html", "_blank");
-      break;
-    default:
-      console.log("Unknown action:", action);
-  }
-}
+    function handleToolOpen(action) {
+      switch (action) {
+        case "open-qr-generator":
+          window.open("QR.html", "_blank");
+          break;
+        case "open-qr-reader":
+          window.open("QR reader.html", "_blank");
+          break;
+        case "open-barcode-generator":
+          window.open("Bar Code.html", "_blank");
+          break;
+        case "open-barcode-reader":
+          window.open("Bar Code Reader.html", "_blank");
+          break;
+        default:
+          console.log("Unknown action:", action);
+      }
+    }
   </script>
 </body>
 </html>
-
-
-
