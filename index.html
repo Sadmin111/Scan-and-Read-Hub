@@ -849,26 +849,26 @@ scanCode({
       });
     });
 
-    function handleToolOpen(action) {
-      // Replace these with actual navigation or modal logic
-      switch (action) {
-case "open-qr-generator":
-  window.open("QR.html", "_blank");
-  break;
-        case "open-qr-reader":
-window.open("QR reader.html", "_blank");
-  break;
-        case "open-barcode-generator":
-window.open("Bar code.html", "_blank");
-  break;
-        case "open-barcode-reader":
-window.open("Bar code reader.html", "_blank");
-  break;
-        default:
-          console.log("Unknown action:", action);
-      }
-    }
+function handleToolOpen(action) {
+  switch (action) {
+    case "open-qr-generator":
+      window.open("QR.html", "_blank");
+      break;
+    case "open-qr-reader":
+      window.open("QR reader.html", "_blank");
+      break;
+    case "open-barcode-generator":
+      window.open("Bar Code.html", "_blank");        // C is capital
+      break;
+    case "open-barcode-reader":
+      window.open("Bar Code Reader.html", "_blank"); // C & R capital
+      break;
+    default:
+      console.log("Unknown action:", action);
+  }
+}
   </script>
 </body>
 </html>
+
 
