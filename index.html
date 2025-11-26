@@ -324,6 +324,69 @@
       display: block;
     }
 
+    /* Dummy QR overlay */
+    .qr-dummy {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      width: 78px;
+      height: 78px;
+      border-radius: 0.9rem;
+      background:
+        radial-gradient(circle at top left, #022c22 0, #020617 60%);
+      border: 1px solid rgba(34, 197, 94, 0.8);
+      box-shadow:
+        0 0 10px rgba(34, 197, 94, 0.6),
+        0 0 30px rgba(22, 163, 74, 0.5);
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .qr-dummy::before {
+      /* subtle QR grid noise */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(90deg, rgba(16, 185, 129, 0.25) 1px, transparent 1px),
+        linear-gradient(rgba(16, 185, 129, 0.25) 1px, transparent 1px);
+      background-size: 4px 4px;
+      opacity: 0.5;
+      mix-blend-mode: screen;
+    }
+
+    .qr-finder {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 0.35rem;
+      border: 2px solid #22c55e;
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.9);
+    }
+
+    .qr-finder::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 0.2rem;
+      background: #22c55e;
+    }
+
+    .qr-finder.tl {
+      top: 5px;
+      left: 5px;
+    }
+
+    .qr-finder.tr {
+      top: 5px;
+      right: 5px;
+    }
+
+    .qr-finder.bl {
+      bottom: 5px;
+      left: 5px;
+    }
+
     .visual-stats {
       display: flex;
       gap: 1.2rem;
@@ -743,9 +806,14 @@
               <div class="visual-chip">Instant Decode</div>
             </div>
 
-            <!-- MATRIX RAIN CARD -->
+            <!-- MATRIX RAIN CARD + DUMMY QR -->
             <div class="visual-card">
               <canvas id="matrix-canvas"></canvas>
+              <div class="qr-dummy">
+                <div class="qr-finder tl"></div>
+                <div class="qr-finder tr"></div>
+                <div class="qr-finder bl"></div>
+              </div>
             </div>
 
             <div class="visual-stats">
@@ -948,7 +1016,6 @@
       let width, height, columns, drops;
 
       function setup() {
-        // Match canvas size to its CSS size
         width = canvas.clientWidth || 300;
         height = canvas.clientHeight || 140;
         canvas.width = width;
@@ -959,7 +1026,6 @@
       }
 
       function draw() {
-        // translucent background for trail effect
         ctx.fillStyle = "rgba(1, 10, 20, 0.3)";
         ctx.fillRect(0, 0, width, height);
 
