@@ -258,7 +258,7 @@
       background: #bbf7d0;
     }
 
-    /* ===== Matrix-style hero visual ===== */
+    /* ===== Hero visual + Matrix card ===== */
     .hero-visual {
       position: relative;
       min-height: 200px;
@@ -310,85 +310,18 @@
       position: relative;
       margin-top: auto;
       border-radius: 1.4rem;
-      padding: 0.9rem 1.1rem;
-      background: radial-gradient(circle at top left, #020617 0, #020617 50%, #022c22 100%);
+      padding: 0; /* canvas fills card */
+      background: radial-gradient(circle at top left, #020617 0, #020617 40%, #022c22 100%);
       border: 1px solid rgba(34, 197, 94, 0.65);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
       overflow: hidden;
+      min-height: 140px;
     }
 
-    /* Falling green code overlay */
-    .visual-card::before {
-      content: "";
-      position: absolute;
-      inset: -40px 0 0 0;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        rgba(34, 197, 94, 0.04) 0px,
-        rgba(34, 197, 94, 0.12) 2px,
-        transparent 3px,
-        transparent 6px
-      );
-      opacity: 0.7;
-      mix-blend-mode: screen;
-      pointer-events: none;
-      animation: matrix-fall 4s linear infinite;
-    }
-
-    /* Horizontal scanline */
-    .visual-card::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 40px;
-      top: -40px;
-      background: linear-gradient(
-        to bottom,
-        transparent,
-        rgba(34, 197, 94, 0.28),
-        transparent
-      );
-      mix-blend-mode: screen;
-      pointer-events: none;
-      animation: matrix-scan 3.5s linear infinite;
-    }
-
-    .visual-code {
-      position: relative;
-      z-index: 1;
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
-        Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.8rem;
-      color: #4ade80;
-      max-width: 65%;
-      line-height: 1.4;
-      text-shadow: 0 0 6px rgba(22, 163, 74, 0.8);
-    }
-
-    .visual-code span {
-      color: #a7f3d0;
-    }
-
-    .visual-burst {
-      position: relative;
-      z-index: 1;
-      width: 56px;
-      height: 56px;
-      border-radius: 1.3rem;
-      background: radial-gradient(circle, #22c55e 0, #15803d 65%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.9rem;
-      color: #ecfdf5;
-      box-shadow:
-        0 0 12px rgba(34, 197, 94, 0.9),
-        0 0 40px rgba(34, 197, 94, 0.65);
+    #matrix-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     .visual-stats {
@@ -407,30 +340,6 @@
       color: #e5e7eb;
       font-size: 0.82rem;
       font-weight: 500;
-    }
-
-    /* Matrix animations */
-    @keyframes matrix-fall {
-      from {
-        transform: translateY(-40px);
-      }
-      to {
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes matrix-scan {
-      0% {
-        transform: translateY(-40px);
-        opacity: 0;
-      }
-      25% {
-        opacity: 0.7;
-      }
-      100% {
-        transform: translateY(240px);
-        opacity: 0;
-      }
     }
 
     .options-section-header {
@@ -724,24 +633,7 @@
       }
 
       .visual-card {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .visual-code {
-        max-width: 100%;
-        font-size: 0.7rem;
-        overflow-x: auto;
-      }
-
-      .visual-burst {
-        align-self: flex-end;
-        margin-top: 0.4rem;
-      }
-
-      .visual-stats {
-        flex-wrap: wrap;
-        gap: 0.7rem;
+        min-height: 130px;
       }
 
       .options-section-header {
@@ -842,7 +734,7 @@
         <aside
           class="hero-visual"
           role="img"
-          aria-label="Stylized QR and barcode preview"
+          aria-label="Matrix style animation preview"
         >
           <div class="hero-visual-grid"></div>
           <div class="hero-visual-inner">
@@ -851,14 +743,9 @@
               <div class="visual-chip">Instant Decode</div>
             </div>
 
+            <!-- MATRIX RAIN CARD -->
             <div class="visual-card">
-              <pre class="visual-code">
-scanCode({
-  mode: <span>"qr"</span>,
-  source: <span>"camera"</span>,
-  secure: <span>true</span>,
-});</pre>
-              <div class="visual-burst">◎</div>
+              <canvas id="matrix-canvas"></canvas>
             </div>
 
             <div class="visual-stats">
@@ -1049,6 +936,56 @@ scanCode({
           console.log("Unknown action:", action);
       }
     }
+
+    // ===== Matrix rain animation =====
+    (function () {
+      const canvas = document.getElementById("matrix-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      const fontSize = 14;
+      const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let width, height, columns, drops;
+
+      function setup() {
+        // Match canvas size to its CSS size
+        width = canvas.clientWidth || 300;
+        height = canvas.clientHeight || 140;
+        canvas.width = width;
+        canvas.height = height;
+
+        columns = Math.floor(width / fontSize);
+        drops = new Array(columns).fill(1);
+      }
+
+      function draw() {
+        // translucent background for trail effect
+        ctx.fillStyle = "rgba(1, 10, 20, 0.3)";
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+
+        for (let i = 0; i < columns; i++) {
+          const text = chars.charAt(Math.floor(Math.random() * chars.length));
+          const x = i * fontSize;
+          const y = drops[i] * fontSize;
+
+          ctx.fillStyle = "#4ade80";
+          ctx.fillText(text, x, y);
+
+          if (y > height && Math.random() > 0.95) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener("resize", setup);
+      setup();
+      requestAnimationFrame(draw);
+    })();
   </script>
 </body>
 </html>
