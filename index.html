@@ -258,30 +258,25 @@
       background: #bbf7d0;
     }
 
+    /* ===== Matrix-style hero visual ===== */
     .hero-visual {
       position: relative;
       min-height: 200px;
       border-radius: 1.8rem;
       padding: 1.2rem;
-      background: radial-gradient(circle at top left, #22c55e1c, #020617 65%);
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(circle at top left, #022c22 0, #020617 55%);
+      border: 1px solid rgba(34, 197, 94, 0.45);
       overflow: hidden;
     }
 
     .hero-visual-grid {
       position: absolute;
       inset: 0;
-      background-image: linear-gradient(
-          rgba(15, 23, 42, 0.75) 1px,
-          transparent 1px
-        ),
-        linear-gradient(
-          90deg,
-          rgba(15, 23, 42, 0.75) 1px,
-          transparent 1px
-        );
-      background-size: 26px 26px;
-      opacity: 0.7;
+      background-image:
+        linear-gradient(rgba(15, 23, 42, 0.9) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.9) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.9;
       pointer-events: none;
     }
 
@@ -312,40 +307,88 @@
     }
 
     .visual-card {
+      position: relative;
       margin-top: auto;
       border-radius: 1.4rem;
-      padding: 0.9rem 1rem;
-      background: rgba(2, 6, 23, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.45);
+      padding: 0.9rem 1.1rem;
+      background: radial-gradient(circle at top left, #020617 0, #020617 50%, #022c22 100%);
+      border: 1px solid rgba(34, 197, 94, 0.65);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+    }
+
+    /* Falling green code overlay */
+    .visual-card::before {
+      content: "";
+      position: absolute;
+      inset: -40px 0 0 0;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(34, 197, 94, 0.04) 0px,
+        rgba(34, 197, 94, 0.12) 2px,
+        transparent 3px,
+        transparent 6px
+      );
+      opacity: 0.7;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      animation: matrix-fall 4s linear infinite;
+    }
+
+    /* Horizontal scanline */
+    .visual-card::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 40px;
+      top: -40px;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(34, 197, 94, 0.28),
+        transparent
+      );
+      mix-blend-mode: screen;
+      pointer-events: none;
+      animation: matrix-scan 3.5s linear infinite;
     }
 
     .visual-code {
+      position: relative;
+      z-index: 1;
       font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
         Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.76rem;
-      color: #9ca3af;
+      font-size: 0.8rem;
+      color: #4ade80;
       max-width: 65%;
       line-height: 1.4;
+      text-shadow: 0 0 6px rgba(22, 163, 74, 0.8);
     }
 
     .visual-code span {
-      color: #a5f3fc;
+      color: #a7f3d0;
     }
 
     .visual-burst {
+      position: relative;
+      z-index: 1;
       width: 56px;
       height: 56px;
       border-radius: 1.3rem;
-      background: radial-gradient(circle, #22c55e, #16a34a);
+      background: radial-gradient(circle, #22c55e 0, #15803d 65%);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.9rem;
-      box-shadow: 0 20px 40px rgba(22, 163, 74, 0.9);
+      color: #ecfdf5;
+      box-shadow:
+        0 0 12px rgba(34, 197, 94, 0.9),
+        0 0 40px rgba(34, 197, 94, 0.65);
     }
 
     .visual-stats {
@@ -364,6 +407,30 @@
       color: #e5e7eb;
       font-size: 0.82rem;
       font-weight: 500;
+    }
+
+    /* Matrix animations */
+    @keyframes matrix-fall {
+      from {
+        transform: translateY(-40px);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes matrix-scan {
+      0% {
+        transform: translateY(-40px);
+        opacity: 0;
+      }
+      25% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(240px);
+        opacity: 0;
+      }
     }
 
     .options-section-header {
