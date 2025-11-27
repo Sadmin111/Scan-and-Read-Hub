@@ -193,22 +193,55 @@
     }
 
     // DOWNLOAD QR
+<script>
 function downloadQR() {
-    const canvas = document.getElementById("qrCanvas");
-    const image = canvas.toDataURL("image/png");
+    const container = document.getElementById("qrcode"); // 👈 change if your QR wrapper has different id
+    if (!container) {
+        alert("QR code not found.");
+        return;
+    }
 
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = "qrcode.png";
+    // Try to find a <canvas> first
+    let dataURL = null;
+    const canvas = container.querySelector("canvas");
+    if (canvas) {
+        // Canvas → Blob → download (best for mobile)
+        canvas.toBlob(function (blob) {
+            if (!blob) {
+                alert("Could not generate image.");
+                return;
+            }
+            const url = URL.createObjectURL(blob);
+            triggerDownload(url);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }, "image/png");
+        return;
+    }
 
-    // Required for mobile browsers
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // If no canvas, try <img> (many QR libraries create an <img>)
+    const img = container.querySelector("img");
+    if (img && img.src) {
+        triggerDownload(img.src);
+        return;
+    }
+
+    alert("QR code image not found.");
 }
 
+function triggerDownload(url) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "qrcode.png";
+
+    // Needed on many mobile browsers
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+</script>
 </script>
 
 </body>
 </html>
+
 
