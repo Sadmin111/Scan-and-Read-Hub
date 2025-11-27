@@ -2,128 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>QR Generator with Download</title>
+  <title>QR Test Download</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body style="font-family: system-ui, sans-serif; background:#020617; color:#e5e7eb; display:flex; justify-content:center; align-items:center; min-height:100vh;">
+<body style="font-family: system-ui, sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; background:#020617; color:white;">
 
-  <div style="background:#020617; border:1px solid #1f2937; border-radius:16px; padding:24px; max-width:360px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.6); text-align:center;">
-    <h1 style="font-size:20px; margin-bottom:16px;">QR Code Generator</h1>
-
-    <input
-      id="qrText"
-      type="text"
-      placeholder="Enter text or URL"
-      style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid #4b5563; background:#020617; color:#e5e7eb; outline:none; margin-bottom:12px;"
-    />
-
-    <div style="display:flex; gap:8px; justify-content:center; margin-bottom:16px;">
-      <button
-        type="button"
-        onclick="generateQR()"
-        style="flex:1; padding:10px 12px; border-radius:999px; border:none; background:#22c55e; color:#020617; font-weight:600; cursor:pointer;"
-      >
-        Generate
-      </button>
-      <button
-        type="button"
-        onclick="downloadQR()"
-        style="flex:1; padding:10px 12px; border-radius:999px; border:none; background:#0ea5e9; color:#020617; font-weight:600; cursor:pointer;"
-      >
-        Download
-      </button>
-    </div>
-
-    <div id="qrcodeWrapper" style="display:flex; justify-content:center;">
-      <div id="qrcode" style="background:#020617; padding:8px; border-radius:12px;"></div>
-    </div>
+  <div>
+    <h2>Test QR Download</h2>
+    <button type="button" onclick="generateQR()">Generate QR</button>
+    <button type="button" onclick="downloadQR()">Download QR</button>
+    <div id="qrcode" style="margin-top:16px;"></div>
   </div>
 
-  <!-- QRCode library (same one we used earlier) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <script>
     let qr;
 
     function generateQR() {
-      const text = document.getElementById("qrText").value.trim();
-      const qrcodeContainer = document.getElementById("qrcode");
-      qrcodeContainer.innerHTML = ""; // clear old
-
-      if (!text) {
-        alert("Please enter some text or URL.");
-        return;
-      }
-
-      // Create QR
-      qr = new QRCode(qrcodeContainer, {
-        text: text,
-        width: 256,
-        height: 256,
-        correctLevel: QRCode.CorrectLevel.H,
+      const container = document.getElementById("qrcode");
+      container.innerHTML = "";
+      qr = new QRCode(container, {
+        text: "Hello from test page",
+        width: 200,
+        height: 200,
+        correctLevel: QRCode.CorrectLevel.H
       });
+      alert("QR generated. Now click Download.");
     }
 
     function downloadQR() {
-      const qrcodeContainer = document.getElementById("qrcode");
-      if (!qrcodeContainer) {
-        alert("QR container not found.");
-        return;
-      }
+      try {
+        const container = document.getElementById("qrcode");
+        const canvas = container.querySelector("canvas");
+        const img = container.querySelector("img");
 
-      const canvas = qrcodeContainer.querySelector("canvas");
-      const img = qrcodeContainer.querySelector("img");
-
-      if (!canvas && !img) {
-        alert("Please generate a QR code first.");
-        return;
-      }
-
-      // Helper to trigger download
-      function trigger(url) {
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "qrcode.png";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-
-      // If QR was rendered as <canvas>
-      if (canvas) {
-        if (canvas.toBlob) {
-          canvas.toBlob(function (blob) {
-            if (!blob) {
-              alert("Could not export QR image.");
-              return;
-            }
-            const url = URL.createObjectURL(blob);
-            trigger(url);
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-          }, "image/png");
-        } else {
-          // Older fallback
-          const dataURL = canvas.toDataURL("image/png");
-          trigger(dataURL);
+        if (!canvas && !img) {
+          alert("No QR yet. Click Generate first.");
+          return;
         }
-        return;
-      }
 
-      // If QR was rendered as <img>, copy it to a temp canvas and export PNG
-      if (img && img.src) {
-        const tempCanvas = document.createElement("canvas");
-        const size = 256;
-        tempCanvas.width = size;
-        tempCanvas.height = size;
-        const ctx = tempCanvas.getContext("2d");
+        function trigger(url) {
+          alert("Triggering download…");
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "qrcode.png";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
 
-        const tempImg = new Image();
-        tempImg.crossOrigin = "anonymous";
-        tempImg.onload = function () {
-          ctx.drawImage(tempImg, 0, 0, size, size);
-
-          if (tempCanvas.toBlob) {
-            tempCanvas.toBlob(function (blob) {
+        // If rendered as canvas
+        if (canvas) {
+          if (canvas.toBlob) {
+            canvas.toBlob(function(blob) {
               if (!blob) {
                 alert("Could not export QR image.");
                 return;
@@ -133,11 +65,43 @@
               setTimeout(() => URL.revokeObjectURL(url), 1000);
             }, "image/png");
           } else {
-            const dataURL = tempCanvas.toDataURL("image/png");
+            const dataURL = canvas.toDataURL("image/png");
             trigger(dataURL);
           }
-        };
-        tempImg.src = img.src;
+          return;
+        }
+
+        // If rendered as img
+        if (img && img.src) {
+          const tempCanvas = document.createElement("canvas");
+          const size = 200;
+          tempCanvas.width = size;
+          tempCanvas.height = size;
+          const ctx = tempCanvas.getContext("2d");
+
+          const tempImg = new Image();
+          tempImg.crossOrigin = "anonymous";
+          tempImg.onload = function () {
+            ctx.drawImage(tempImg, 0, 0, size, size);
+            if (tempCanvas.toBlob) {
+              tempCanvas.toBlob(function (blob) {
+                if (!blob) {
+                  alert("Could not export QR image.");
+                  return;
+                }
+                const url = URL.createObjectURL(blob);
+                trigger(url);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+              }, "image/png");
+            } else {
+              const dataURL = tempCanvas.toDataURL("image/png");
+              trigger(dataURL);
+            }
+          };
+          tempImg.src = img.src;
+        }
+      } catch (e) {
+        alert("Error in downloadQR: " + e.message);
       }
     }
   </script>
