@@ -1,247 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Modern QR Code Generator</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background: #f2f4f7;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden; /* so floating QR doesn't scroll page */
-        position: relative;
-    }
-
-    /* BACKGROUND ANIMATION WRAPPER */
-    .qr-floating-bg {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    .float-qr {
-        position: absolute;
-        opacity: 0.15;
-        animation: floatUp linear infinite;
-        filter: blur(2px);
-    }
-
-    @keyframes floatUp {
-        0% { transform: translateY(100vh) rotate(0deg); }
-        100% { transform: translateY(-120vh) rotate(360deg); }
-    }
-
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 360px;
-        background: #ffffff;
-        padding: 60px;
-        border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        text-align: center;
-        animation: fadeIn 0.6s ease;
-        z-index: 10;
-        position: relative;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .title {
-        font-size: 22px;
-        font-weight: 600;
-        margin-bottom: 16px;
-        color: #1a1a1a;
-    }
-
-    input {
-        display: block;
-        margin: 0 auto;
-        width: 100%;
-        padding: 12px;
-        border-radius: 16px;
-        border: 2px solid #d0d5dd;
-        font-size: 15px;
-        outline: none;
-        transition: 0.2s;
-    }
-
-    input:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
-    }
-
-    button {
-        width: 100%;
-        margin-top: 15px;
-        padding: 14px;
-        border: none;
-        border-radius: 12px;
-        background: #6366f1;
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.25s;
-    }
-
-    button:hover {
-        background: #4f46e5;
-    }
-
-    #qrcode {
-        margin-top: 25px;
-        display: none;
-    }
-
-    .download-btn {
-        margin-top: 12px;
-        background: #10b981;
-    }
-
-    .download-btn:hover {
-        background: #059669;
-    }
-</style>
+  <meta charset="UTF-8" />
+  <title>QR Generator with Download</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
+<body style="font-family: system-ui, sans-serif; background:#020617; color:#e5e7eb; display:flex; justify-content:center; align-items:center; min-height:100vh;">
 
-<body>
+  <div style="background:#020617; border:1px solid #1f2937; border-radius:16px; padding:24px; max-width:360px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.6); text-align:center;">
+    <h1 style="font-size:20px; margin-bottom:16px;">QR Code Generator</h1>
 
-<!-- BACKGROUND FLOATING QR ANIMATION -->
-<div class="qr-floating-bg" id="bgQRContainer"></div>
+    <input
+      id="qrText"
+      type="text"
+      placeholder="Enter text or URL"
+      style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid #4b5563; background:#020617; color:#e5e7eb; outline:none; margin-bottom:12px;"
+    />
 
-<div class="container">
-    <div class="title">QR Code Generator</div>
+    <div style="display:flex; gap:8px; justify-content:center; margin-bottom:16px;">
+      <button
+        type="button"
+        onclick="generateQR()"
+        style="flex:1; padding:10px 12px; border-radius:999px; border:none; background:#22c55e; color:#020617; font-weight:600; cursor:pointer;"
+      >
+        Generate
+      </button>
+      <button
+        type="button"
+        onclick="downloadQR()"
+        style="flex:1; padding:10px 12px; border-radius:999px; border:none; background:#0ea5e9; color:#020617; font-weight:600; cursor:pointer;"
+      >
+        Download
+      </button>
+    </div>
 
-    <input type="text" id="linkInput" placeholder="Enter any URL...">
+    <div id="qrcodeWrapper" style="display:flex; justify-content:center;">
+      <div id="qrcode" style="background:#020617; padding:8px; border-radius:12px;"></div>
+    </div>
+  </div>
 
-    <button onclick="generateQR()">Generate QR Code</button>
+  <!-- QRCode library (same one we used earlier) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <div id="qrcode"></div>
-
-    <button class="download-btn" id="downloadBtn" style="display:none;" onclick="downloadQR()">
-        Download QR Code
-    </button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-
-<script>
+  <script>
     let qr;
 
     function generateQR() {
-        const link = document.getElementById("linkInput").value.trim();
-        if (link === "") {
-            alert("Please enter a valid URL.");
-            return;
-        }
+      const text = document.getElementById("qrText").value.trim();
+      const qrcodeContainer = document.getElementById("qrcode");
+      qrcodeContainer.innerHTML = ""; // clear old
 
-        document.getElementById("qrcode").innerHTML = "";
-        qr = new QRCode(document.getElementById("qrcode"), {
-            text: link,
-            width: 200,
-            height: 200,
-            colorDark: "#1a1a1a",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-
-        document.getElementById("qrcode").style.display = "block";
-        document.getElementById("downloadBtn").style.display = "block";
-
-        generateFloatingQRs();
-    }
-
-    // CREATE ANIMATED FLOATING QR EFFECT
-    function generateFloatingQRs() {
-        const container = document.getElementById("bgQRContainer");
-        container.innerHTML = ""; // Clear previous animation
-
-        for (let i = 0; i < 10; i++) {
-            const qrDiv = document.createElement("img");
-            qrDiv.src = "https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=dummy" + i;
-            qrDiv.className = "float-qr";
-
-            const size = Math.random() * 40 + 40; // random size 40–80px
-            const left = Math.random() * 100; // random X position
-            const duration = Math.random() * 10 + 10; // random speed 10–20s
-            const delay = Math.random() * 5;
-
-            qrDiv.style.width = size + "px";
-            qrDiv.style.left = left + "vw";
-            qrDiv.style.animationDuration = duration + "s";
-            qrDiv.style.animationDelay = delay + "s";
-
-            container.appendChild(qrDiv);
-        }
-    }
-
-    // DOWNLOAD QR
-<script>
-function downloadQR() {
-    const container = document.getElementById("qrcode"); // 👈 change if your QR wrapper has different id
-    if (!container) {
-        alert("QR code not found.");
+      if (!text) {
+        alert("Please enter some text or URL.");
         return;
+      }
+
+      // Create QR
+      qr = new QRCode(qrcodeContainer, {
+        text: text,
+        width: 256,
+        height: 256,
+        correctLevel: QRCode.CorrectLevel.H,
+      });
     }
 
-    // Try to find a <canvas> first
-    let dataURL = null;
-    const canvas = container.querySelector("canvas");
-    if (canvas) {
-        // Canvas → Blob → download (best for mobile)
-        canvas.toBlob(function (blob) {
+    function downloadQR() {
+      const qrcodeContainer = document.getElementById("qrcode");
+      if (!qrcodeContainer) {
+        alert("QR container not found.");
+        return;
+      }
+
+      const canvas = qrcodeContainer.querySelector("canvas");
+      const img = qrcodeContainer.querySelector("img");
+
+      if (!canvas && !img) {
+        alert("Please generate a QR code first.");
+        return;
+      }
+
+      // Helper to trigger download
+      function trigger(url) {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "qrcode.png";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      // If QR was rendered as <canvas>
+      if (canvas) {
+        if (canvas.toBlob) {
+          canvas.toBlob(function (blob) {
             if (!blob) {
-                alert("Could not generate image.");
-                return;
+              alert("Could not export QR image.");
+              return;
             }
             const url = URL.createObjectURL(blob);
-            triggerDownload(url);
+            trigger(url);
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-        }, "image/png");
+          }, "image/png");
+        } else {
+          // Older fallback
+          const dataURL = canvas.toDataURL("image/png");
+          trigger(dataURL);
+        }
         return;
+      }
+
+      // If QR was rendered as <img>, copy it to a temp canvas and export PNG
+      if (img && img.src) {
+        const tempCanvas = document.createElement("canvas");
+        const size = 256;
+        tempCanvas.width = size;
+        tempCanvas.height = size;
+        const ctx = tempCanvas.getContext("2d");
+
+        const tempImg = new Image();
+        tempImg.crossOrigin = "anonymous";
+        tempImg.onload = function () {
+          ctx.drawImage(tempImg, 0, 0, size, size);
+
+          if (tempCanvas.toBlob) {
+            tempCanvas.toBlob(function (blob) {
+              if (!blob) {
+                alert("Could not export QR image.");
+                return;
+              }
+              const url = URL.createObjectURL(blob);
+              trigger(url);
+              setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }, "image/png");
+          } else {
+            const dataURL = tempCanvas.toDataURL("image/png");
+            trigger(dataURL);
+          }
+        };
+        tempImg.src = img.src;
+      }
     }
-
-    // If no canvas, try <img> (many QR libraries create an <img>)
-    const img = container.querySelector("img");
-    if (img && img.src) {
-        triggerDownload(img.src);
-        return;
-    }
-
-    alert("QR code image not found.");
-}
-
-function triggerDownload(url) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "qrcode.png";
-
-    // Needed on many mobile browsers
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-</script>
-</script>
-
+  </script>
 </body>
 </html>
-
-
