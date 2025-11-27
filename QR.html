@@ -8,22 +8,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
     body {
         font-family: 'Inter', sans-serif;
-        background: #f2f4f7;
-        margin: 0;
+        min-height: 100vh;
         display: flex;
-        justify-content: center;
         align-items: center;
-        height: 100vh;
-        overflow: hidden; /* so floating QR doesn't scroll page */
+        justify-content: center;
+        padding: 24px;
+        background:
+          radial-gradient(circle at top left, #22c55e22, #0f766e11, #020617ff),
+          #020617;
+        color: #e5e7eb;
+        overflow: hidden;
         position: relative;
     }
 
-    /* BACKGROUND ANIMATION WRAPPER */
+    /* BACKGROUND FLOATING QR ANIMATION */
     .qr-floating-bg {
-        position: absolute;
-        top: 0; left: 0;
+        position: fixed;
+        inset: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
@@ -33,90 +42,131 @@
 
     .float-qr {
         position: absolute;
-        opacity: 0.15;
+        opacity: 0.14;
         animation: floatUp linear infinite;
-        filter: blur(2px);
+        filter: grayscale(1) hue-rotate(90deg) brightness(0.9);
+        mix-blend-mode: screen;
     }
 
     @keyframes floatUp {
-        0% { transform: translateY(100vh) rotate(0deg); }
-        100% { transform: translateY(-120vh) rotate(360deg); }
+        0% { transform: translateY(110vh) rotate(0deg); }
+        100% { transform: translateY(-130vh) rotate(30deg); }
     }
 
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 360px;
-        background: #ffffff;
-        padding: 60px;
-        border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        text-align: center;
-        animation: fadeIn 0.6s ease;
-        z-index: 10;
-        position: relative;
-    }
+   /* Reduce card size */
+.container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 720px; /* smaller */
+    background: radial-gradient(circle at top left, #0f172a, #020617);
+    border-radius: 28px;
+    padding: 28px 32px 22px; /* tighter */
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(24px);
+    animation: fadeIn 0.6s ease;
+}
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+/* Title smaller */
+.title {
+    font-size: 1.6rem; /* reduced */
+    font-weight: 600;
+    margin-bottom: 4px;
+}
 
-    .title {
-        font-size: 22px;
-        font-weight: 600;
-        margin-bottom: 16px;
-        color: #1a1a1a;
-    }
+.subtitle {
+    font-size: 0.85rem; /* reduced */
+    color: #9ca3af;
+}
 
-    input {
+/* Label smaller */
+.field-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+}
+
+/* Input smaller */
+input {
+    width: 100%;
+    padding: 12px 14px; /* reduced */
+    border-radius: 16px; /* reduced */
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    background: rgba(15, 23, 42, 0.9);
+    color: #e5e7eb;
+    font-size: 0.9rem; /* smaller */
+}
+
+/* Button row spacing smaller */
+.actions {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px; /* reduced */
+    margin-top: 10px;
+}
+
+/* Buttons smaller */
+button {
+    padding: 8px 20px;  /* reduced */
+    font-size: 0.85rem; /* smaller */
+    border-radius: 18px; /* reduced */
+}
+
+/* Primary button smaller */
+.btn-primary {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 12px 35px rgba(34, 197, 94, 0.45);
+}
+
+/* Secondary buttons smaller */
+.btn-secondary {
+    border: 1px solid rgba(148,163,184,0.6);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.6);
+}
+
+/* QR output box smaller */
+#qrcode {
+    margin-top: 20px; /* reduced */
+    padding: 14px;
+    border-radius: 16px;
+}
+
+
+    #qrcode img {
         display: block;
         margin: 0 auto;
-        width: 100%;
-        padding: 12px;
-        border-radius: 16px;
-        border: 2px solid #d0d5dd;
-        font-size: 15px;
-        outline: none;
-        transition: 0.2s;
     }
 
-    input:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+    .footer {
+        margin-top: 16px;
+        font-size: 0.72rem;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
-    button {
-        width: 100%;
-        margin-top: 15px;
-        padding: 14px;
-        border: none;
-        border-radius: 12px;
-        background: #6366f1;
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.25s;
+    .badge {
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.65rem;
     }
 
-    button:hover {
-        background: #4f46e5;
-    }
-
-    #qrcode {
-        margin-top: 25px;
-        display: none;
-    }
-
-    .download-btn {
-        margin-top: 12px;
-        background: #10b981;
-    }
-
-    .download-btn:hover {
-        background: #059669;
+    @media (max-width: 768px) {
+        .container {
+            padding: 24px 20px 22px;
+            border-radius: 24px;
+        }
+        .title {
+            font-size: 1.5rem;
+        }
     }
 </style>
 </head>
@@ -127,24 +177,30 @@
 <div class="qr-floating-bg" id="bgQRContainer"></div>
 
 <div class="container">
-    <div class="title">QR Code Generator</div>
+    <div class="header">
+        <div class="title">QR Code Generator</div>
+        <div class="subtitle">Paste any URL, generate a QR, and download it instantly.</div>
+    </div>
 
-    <input type="text" id="linkInput" placeholder="Enter any URL...">
+    <div class="row">
+        <div class="field-label">Input URL</div>
+        <input type="text" id="linkInput" placeholder="Enter any URL...">
+    </div>
 
-    <!-- ensure type="button" so no weird form submit behaviour -->
-    <button type="button" onclick="generateQR()">Generate QR Code</button>
+    <div class="actions">
+        <button class="btn-secondary" onclick="clearAll()">Clear</button>
+        <button class="btn-secondary" id="downloadBtn" onclick="downloadQR()" disabled>
+            Download QR Code
+        </button>
+        <button class="btn-primary" onclick="generateQR()">Generate QR Code</button>
+    </div>
 
     <div id="qrcode"></div>
 
-    <button
-        type="button"
-        class="download-btn"
-        id="downloadBtn"
-        style="display:none;"
-        onclick="downloadQR()"
-    >
-        Download QR Code
-    </button>
+    <div class="footer">
+        <span class="badge">High-Quality QR</span>
+        <span>Supports URLs, text & more</span>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
@@ -154,27 +210,35 @@
 
     function generateQR() {
         const link = document.getElementById("linkInput").value.trim();
+        const qrContainer = document.getElementById("qrcode");
+        const downloadBtn = document.getElementById("downloadBtn");
+
         if (link === "") {
             alert("Please enter a valid URL.");
             return;
         }
 
-        const qrContainer = document.getElementById("qrcode");
         qrContainer.innerHTML = "";
-
         qr = new QRCode(qrContainer, {
             text: link,
-            width: 200,
-            height: 200,
-            colorDark: "#1a1a1a",
-            colorLight: "#ffffff",
+            width: 220,
+            height: 220,
+            colorDark: "#e5e7eb",
+            colorLight: "#020617",
             correctLevel: QRCode.CorrectLevel.H
         });
 
-        qrContainer.style.display = "block";
-        document.getElementById("downloadBtn").style.display = "block";
+        qrContainer.style.display = "inline-block";
+        downloadBtn.disabled = false;
 
         generateFloatingQRs();
+    }
+
+    function clearAll() {
+        document.getElementById("linkInput").value = "";
+        document.getElementById("qrcode").innerHTML = "";
+        document.getElementById("qrcode").style.display = "none";
+        document.getElementById("downloadBtn").disabled = true;
     }
 
     // CREATE ANIMATED FLOATING QR EFFECT
@@ -182,15 +246,15 @@
         const container = document.getElementById("bgQRContainer");
         container.innerHTML = ""; // Clear previous animation
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 14; i++) {
             const qrDiv = document.createElement("img");
             qrDiv.src = "https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=dummy" + i;
             qrDiv.className = "float-qr";
 
-            const size = Math.random() * 40 + 40; // random size 40–80px
-            const left = Math.random() * 100; // random X position
-            const duration = Math.random() * 10 + 10; // random speed 10–20s
-            const delay = Math.random() * 5;
+            const size = Math.random() * 40 + 40;        // 40–80px
+            const left = Math.random() * 100;            // random X position (vw)
+            const duration = Math.random() * 18 + 16;    // 16–34s
+            const delay = Math.random() * 10;            // 0–10s
 
             qrDiv.style.width = size + "px";
             qrDiv.style.left = left + "vw";
@@ -201,81 +265,14 @@
         }
     }
 
-    // DOWNLOAD QR (works for both canvas and img, laptop + mobile)
+    // DOWNLOAD QR
     function downloadQR() {
-        const container = document.getElementById("qrcode");
-        if (!container) {
-            alert("QR container not found.");
-            return;
-        }
-
-        const canvas = container.querySelector("canvas");
-        const img = container.querySelector("img");
-
-        if (!canvas && !img) {
-            alert("Please generate a QR code first.");
-            return;
-        }
-
-        // Helper to trigger download
-        function trigger(url) {
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "qrcode.png";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        // If QR is rendered as canvas
-        if (canvas) {
-            if (canvas.toBlob) {
-                canvas.toBlob(function (blob) {
-                    if (!blob) {
-                        alert("Could not export QR image.");
-                        return;
-                    }
-                    const url = URL.createObjectURL(blob);
-                    trigger(url);
-                    setTimeout(() => URL.revokeObjectURL(url), 1000);
-                }, "image/png");
-            } else {
-                const dataURL = canvas.toDataURL("image/png");
-                trigger(dataURL);
-            }
-            return;
-        }
-
-        // If QR is rendered as img, copy to a temporary canvas → PNG blob
-        if (img && img.src) {
-            const tempCanvas = document.createElement("canvas");
-            const size = img.naturalWidth || 200;
-            tempCanvas.width = size;
-            tempCanvas.height = size;
-            const ctx = tempCanvas.getContext("2d");
-
-            const tempImg = new Image();
-            // if it's a data URL, crossOrigin isn't needed, but it's safe for normal URLs
-            tempImg.crossOrigin = "anonymous";
-            tempImg.onload = function () {
-                ctx.drawImage(tempImg, 0, 0, size, size);
-
-                if (tempCanvas.toBlob) {
-                    tempCanvas.toBlob(function (blob) {
-                        if (!blob) {
-                            alert("Could not export QR image.");
-                            return;
-                        }
-                        const url = URL.createObjectURL(blob);
-                        trigger(url);
-                        setTimeout(() => URL.revokeObjectURL(url), 1000);
-                    }, "image/png");
-                } else {
-                    const dataURL = tempCanvas.toDataURL("image/png");
-                    trigger(dataURL);
-                }
-            };
-            tempImg.src = img.src;
+        const img = document.querySelector("#qrcode img");
+        if (img) {
+            const link = document.createElement("a");
+            link.href = img.src;
+            link.download = "qrcode.png";
+            link.click();
         }
     }
 </script>
