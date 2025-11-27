@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Morse Code Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #031b15;
+      overflow: hidden;
+      position: relative;
+      color: #e5e7eb;
+    }
+
+    /* 🔥 Falling Morse background canvas */
+    #morseCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.22;
+    }
+
+    .container {
+      position: relative;
+      z-index: 5;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.5),
+        0 0 0 1px rgba(148, 163, 184, 0.2);
+      backdrop-filter: blur(20px);
+    }
+
+    .header {
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      resize: vertical;
+      min-height: 80px;
+      max-height: 180px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .row {
+      margin-bottom: 14px;
+    }
+
+    .output {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 12px 14px;
+      min-height: 70px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-family: "SF Mono", Consolas, monospace;
+    }
+
+    .placeholder {
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- 🔥 BACKGROUND ANIMATION CANVAS -->
+  <canvas id="morseCanvas"></canvas>
+
+  <div class="container">
+    <div class="header">
+      <div class="title">Morse Code Generator</div>
+      <div class="subtitle">Type your text, click Generate, then copy the Morse code.</div>
+    </div>
+
+    <div class="row">
+      <div class="field-label">Input Text</div>
+      <textarea id="textInput" placeholder="Enter your message here..."></textarea>
+    </div>
+
+    <div class="buttons">
+      <button class="btn-secondary" onclick="clearAll()">Clear</button>
+      <button class="btn-secondary" id="copyBtn" onclick="copyMorse()" disabled>Copy Morse</button>
+      <button class="btn-primary" onclick="handleGenerate()">Generate Morse</button>
+    </div>
+
+    <!-- OUTPUT HIDDEN INITIALLY -->
+    <div id="outputContainer" class="row" style="margin-top:16px; display:none;">
+      <div class="field-label">Morse Code Output</div>
+      <div id="morseOutput" class="output">
+        <span id="morsePlaceholder" class="placeholder">
+          Click “Generate Morse” to see the result...
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ------------------------------------------
+       ⚡ MORSE CODE MAP
+    ------------------------------------------- */
+    const morseMap = {
+      'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..',
+      'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
+      'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+      'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
+      'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+      'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+      'Y': '-.--', 'Z': '--..',
+      '0': '-----', '1': '.----', '2': '..---', '3': '...--',
+      '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+      '8': '---..', '9': '----.'
+    };
+
+    function convertToMorse(str) {
+      return str
+        .toUpperCase()
+        .split(' ')
+        .map(word =>
+          word.split('').map(ch => morseMap[ch] || '').join(' ')
+        )
+        .join(' / ');
+    }
+
+    /* ------------------------------------------
+       🔥 HANDLE GENERATE
+    ------------------------------------------- */
+    function handleGenerate() {
+      const input = document.getElementById("textInput").value;
+      const outputContainer = document.getElementById("outputContainer");
+      const outputDiv = document.getElementById("morseOutput");
+      const placeholder = document.getElementById("morsePlaceholder");
+      const copyBtn = document.getElementById("copyBtn");
+
+      if (!input.trim()) {
+        alert("Please type some text to generate Morse code.");
+        return;
+      }
+
+      const morse = convertToMorse(input);
+
+      outputContainer.style.display = "block";
+      placeholder.style.display = "none";
+      outputDiv.textContent = morse;
+      copyBtn.disabled = false;
+    }
+
+    /* ------------------------------------------
+       📋 COPY
+    ------------------------------------------- */
+    function copyMorse() {
+      navigator.clipboard.writeText(
+        document.getElementById("morseOutput").textContent
+      );
+      alert("Copied!");
+    }
+
+    /* ------------------------------------------
+       🧹 CLEAR
+    ------------------------------------------- */
+    function clearAll() {
+      document.getElementById("textInput").value = "";
+      document.getElementById("outputContainer").style.display = "none";
+      document.getElementById("copyBtn").disabled = true;
+    }
+
+    /* ------------------------------------------
+       💧 MATRIX-STYLE MORSE RAIN
+    ------------------------------------------- */
+    const canvas = document.getElementById("morseCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const symbols = [".", "-", "..", "--", ".-", "-.", "..---", ".--.", "...", "---", "/"];
+
+    const drops = [];
+    const fontSize = 18;
+    const columns = Math.floor(canvas.width / fontSize);
+
+    for (let i = 0; i < columns; i++) {
+      drops[i] = Math.random() * canvas.height;
+    }
+
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#22c55e";
+      ctx.font = fontSize + "px monospace";
+
+      drops.forEach((y, i) => {
+        const text = symbols[Math.floor(Math.random() * symbols.length)];
+        ctx.fillText(text, i * fontSize, y);
+
+        if (y > canvas.height && Math.random() > 0.96) drops[i] = 0;
+        else drops[i] = y + fontSize;
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
