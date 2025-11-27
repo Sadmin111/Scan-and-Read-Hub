@@ -8,22 +8,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
     body {
         font-family: 'Inter', sans-serif;
-        background: #f2f4f7;
-        margin: 0;
+        min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        overflow: hidden; /* so floating QR doesn't scroll page */
+        padding: 24px;
+        background:
+          radial-gradient(circle at top left, #22c55e22, #0f766e11, #020617ff),
+          #020617;
+        color: #e5e7eb;
+        overflow: hidden;
         position: relative;
     }
 
     /* BACKGROUND ANIMATION WRAPPER */
     .qr-floating-bg {
-        position: absolute;
-        top: 0; left: 0;
+        position: fixed;
+        inset: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
@@ -33,29 +42,30 @@
 
     .float-qr {
         position: absolute;
-        opacity: 0.15;
+        opacity: 0.14;
         animation: floatUp linear infinite;
-        filter: blur(2px);
+        filter: grayscale(1) hue-rotate(90deg) brightness(0.9);
+        mix-blend-mode: screen;
     }
 
     @keyframes floatUp {
-        0% { transform: translateY(100vh) rotate(0deg); }
-        100% { transform: translateY(-120vh) rotate(360deg); }
+        0% { transform: translateY(110vh) rotate(0deg); }
+        100% { transform: translateY(-130vh) rotate(30deg); }
     }
 
     .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 360px;
-        background: #ffffff;
-        padding: 60px;
-        border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        text-align: center;
-        animation: fadeIn 0.6s ease;
-        z-index: 10;
         position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 520px; /* smaller box */
+        background: radial-gradient(circle at top left, #0f172a, #020617);
+        border-radius: 24px;
+        padding: 20px 22px 18px;
+        box-shadow:
+          0 22px 60px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(148, 163, 184, 0.15);
+        backdrop-filter: blur(22px);
+        animation: fadeIn 0.6s ease;
     }
 
     @keyframes fadeIn {
@@ -64,67 +74,103 @@
     }
 
     .title {
-        font-size: 22px;
+        font-size: 1.45rem;
         font-weight: 600;
-        margin-bottom: 8px;
-        color: #1a1a1a;
+        margin-bottom: 4px;
+        color: #f9fafb;
     }
 
     .subtitle {
-        font-size: 13px;
-        color: #6b7280;
-        margin-bottom: 20px;
+        font-size: 0.82rem;
+        color: #9ca3af;
+        margin-bottom: 18px;
     }
 
+    /* generic button look */
     button {
-        width: 100%;
-        margin-top: 12px;
-        padding: 14px;
         border: none;
-        border-radius: 12px;
-        background: #6366f1;
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.25s;
-    }
-
-    button:hover {
-        background: #4f46e5;
-    }
-
-    button.secondary {
-        background: #e5e7eb;
-        color: #111827;
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-size: 0.9rem;
         font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        transition: 0.18s ease;
     }
 
-    button.secondary:hover {
-        background: #d1d5db;
+    /* main pills: Start / Stop / Upload – SAME SIZE & CENTERED */
+    #startBtn,
+    #stopBtn,
+    #uploadBtn {
+        width: 260px;          /* 👈 control pill width here */
+        max-width: 100%;
+        padding: 11px 0;
+        margin: 0 auto;        /* center inside container */
+        display: block;
     }
 
+    /* Start = green */
+    #startBtn {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #022c22;
+        box-shadow: 0 12px 40px rgba(34, 197, 94, 0.55);
+    }
+
+    #startBtn:hover {
+        box-shadow: 0 18px 55px rgba(34, 197, 94, 0.75);
+        transform: translateY(-1px);
+    }
+
+    /* Stop / Upload / other secondary buttons */
+    button.secondary,
+    .result-actions button,
+    .copy-btn {
+        background: rgba(15, 23, 42, 0.96);
+        color: #e5e7eb;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.6);
+    }
+
+    button.secondary:hover,
+    .result-actions button:hover,
+    .copy-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.85);
+        background: rgba(15, 23, 42, 1);
+    }
+
+    /* layout for the Start/Stop row */
     .button-row {
         width: 100%;
         display: flex;
-        gap: 8px;
-        margin-top: 12px;
+        justify-content: center;
+        margin-top: 10px;
     }
 
-    .button-row button {
-        width: 100%;
-        margin-top: 0;
+    #stopBtn {
+        /* shares size with start; nothing extra needed */
+    }
+
+    #uploadBtn {
+        margin-top: 14px;
     }
 
     #videoWrapper {
-        margin-top: 20px;
+        margin-top: 16px;
         width: 220px;
         height: 220px;
         border-radius: 18px;
         overflow: hidden;
-        border: 2px solid #e5e7eb;
+        border: 1px solid rgba(148,163,184,0.7);
         display: none;
         position: relative;
+        background: #020617;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.7);
+        margin-left: auto;
+        margin-right: auto; /* centered preview */
     }
 
     #preview {
@@ -138,82 +184,97 @@
         position: absolute;
         inset: 0;
         border-radius: 18px;
-        box-shadow: 0 0 0 9999px rgba(0,0,0,0.15);
-        border: 2px dashed rgba(255,255,255,0.8);
+        box-shadow: 0 0 0 9999px rgba(0,0,0,0.25);
+        border: 2px dashed rgba(148,163,184,0.85);
         pointer-events: none;
     }
 
     #resultBox {
-        margin-top: 18px;
-        padding: 12px 14px;
+        margin-top: 16px;
+        padding: 10px 12px;
         border-radius: 14px;
-        border: 1px dashed #d1d5db;
-        background: #f9fafb;
+        border: 1px solid rgba(148,163,184,0.6);
+        background: rgba(15,23,42,0.95);
         font-size: 13px;
-        color: #374151;
+        color: #e5e7eb;
         width: 100%;
         word-break: break-all;
         display: none;
-        text-align: left;
     }
 
     #resultLabel {
-        font-size: 11px;
+        font-size: 0.7rem;
         text-transform: uppercase;
-        letter-spacing: .08em;
+        letter-spacing: .12em;
         color: #9ca3af;
         margin-bottom: 4px;
     }
 
     #resultText {
-        font-size: 13px;
+        font-size: 0.88rem;
         font-weight: 500;
-        color: #111827;
+        color: #f9fafb;
+        margin-top: 2px;
     }
 
     .result-actions {
         display: flex;
         gap: 8px;
-        margin-top: 10px;
+        margin-top: 8px;
     }
 
     .result-actions button {
         margin-top: 0;
-        padding: 10px;
-        font-size: 13px;
-        border-radius: 10px;
+        padding: 6px 12px;
+        font-size: 0.78rem;
+        border-radius: 12px;
     }
 
     .open-btn {
-        background: #10b981;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #022c22;
+        border: 1px solid rgba(34,197,94,0.9);
+        box-shadow: 0 8px 24px rgba(34,197,94,0.5);
     }
 
     .open-btn:hover {
-        background: #059669;
+        box-shadow: 0 14px 36px rgba(34,197,94,0.7);
     }
 
     .copy-btn {
-        background: #e5e7eb;
-        color: #111827;
-    }
-
-    .copy-btn:hover {
-        background: #d1d5db;
+        background: rgba(15,23,42,0.96);
+        color: #e5e7eb;
     }
 
     .status-text {
         margin-top: 10px;
-        font-size: 12px;
-        color: #6b7280;
+        font-size: 0.78rem;
+        color: #9ca3af;
     }
 
     .status-text.error {
-        color: #b91c1c;
+        color: #fca5a5;
     }
 
     /* Hide canvas (used only for scanning) */
     #hiddenCanvas {
         display: none;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            max-width: 100%;
+            padding: 18px 14px 16px;
+            border-radius: 22px;
+        }
+        .title {
+            font-size: 1.35rem;
+        }
+        #startBtn,
+        #stopBtn,
+        #uploadBtn {
+            width: 85%;
+        }
     }
 </style>
 </head>
@@ -249,7 +310,9 @@
         </div>
     </div>
 
-    <div id="status" class="status-text">Camera is idle. Use "Start Scanning" or "Upload QR Image".</div>
+    <div id="status" class="status-text">
+        Camera is idle. Use "Start Scanning" or "Upload QR Image".
+    </div>
 </div>
 
 <!-- Hidden canvas to process frames -->
@@ -413,7 +476,6 @@
         const file = fileInput.files[0];
         if (!file) return;
 
-        // If camera is running, stop it (optional but cleaner)
         if (scanning || stream) {
             stopScanning();
         }
@@ -449,11 +511,9 @@
         };
         reader.readAsDataURL(file);
 
-        // reset file input so same file can be chosen again if needed
         fileInput.value = "";
     });
 
-    // Copy button
     copyBtn.addEventListener('click', async () => {
         const text = resultText.textContent;
         if (!text) return;
@@ -471,7 +531,6 @@
     startBtn.addEventListener('click', startScanning);
     stopBtn.addEventListener('click', stopScanning);
 
-    // Clean up stream if user leaves page
     window.addEventListener('beforeunload', () => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
