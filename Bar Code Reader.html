@@ -8,22 +8,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
     body {
         font-family: 'Inter', sans-serif;
-        background: #f2f4f7;
-        margin: 0;
+        min-height: 100vh;
         display: flex;
-        justify-content: center;
         align-items: center;
-        height: 100vh;
+        justify-content: center;
+        padding: 24px;
+        background:
+          radial-gradient(circle at top left, #22c55e22, #0f766e11, #020617ff),
+          #020617;
+        color: #e5e7eb;
         overflow: hidden;
         position: relative;
     }
 
     /* BACKGROUND ANIMATION WRAPPER - DUMMY BARCODES */
     .barcode-floating-bg {
-        position: absolute;
-        top: 0; left: 0;
+        position: fixed;
+        inset: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
@@ -33,37 +42,40 @@
 
     .float-barcode {
         position: absolute;
-        opacity: 0.12;
+        opacity: 0.32;
         animation: floatUp linear infinite;
-        filter: blur(1px);
         border-radius: 4px;
         background: repeating-linear-gradient(
             90deg,
-            #000 0px,
-            #000 3px,
-            #fff 3px,
-            #fff 6px
+            #22c55e 0px,
+            #22c55e 3px,
+            #0f172a 3px,
+            #0f172a 6px
         );
+        filter: drop-shadow(0 0 14px rgba(45, 212, 191, 0.85));
+        mix-blend-mode: screen;
     }
 
     @keyframes floatUp {
-        0% { transform: translateY(100vh) rotate(0deg); }
-        100% { transform: translateY(-120vh) rotate(6deg); }
+        0% { transform: translateY(110vh) rotate(0deg); }
+        100% { transform: translateY(-130vh) rotate(6deg); }
     }
 
+    /* CARD */
     .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 360px;
-        background: #ffffff;
-        padding: 60px;
-        border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        text-align: center;
-        animation: fadeIn 0.6s ease;
-        z-index: 10;
         position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 720px;
+        background: radial-gradient(circle at top left, #0f172a, #020617);
+        border-radius: 28px;
+        padding: 28px 32px 22px;
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(148, 163, 184, 0.2);
+        backdrop-filter: blur(24px);
+        text-align: left;
+        animation: fadeIn 0.6s ease;
     }
 
     @keyframes fadeIn {
@@ -72,68 +84,30 @@
     }
 
     .title {
-        font-size: 22px;
+        font-size: 1.6rem;
         font-weight: 600;
-        margin-bottom: 8px;
-        color: #1a1a1a;
+        margin-bottom: 4px;
     }
 
     .subtitle {
-        font-size: 13px;
-        color: #6b7280;
-        margin-bottom: 20px;
+        font-size: 0.85rem;
+        color: #9ca3af;
+        margin-bottom: 18px;
     }
 
-    button {
-        width: 100%;
-        margin-top: 12px;
-        padding: 14px;
-        border: none;
-        border-radius: 12px;
-        background: #6366f1;
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.25s;
-    }
-
-    button:hover {
-        background: #4f46e5;
-    }
-
-    button.secondary {
-        background: #e5e7eb;
-        color: #111827;
-        font-weight: 500;
-    }
-
-    button.secondary:hover {
-        background: #d1d5db;
-    }
-
-    .button-row {
-        width: 100%;
-        display: flex;
-        gap: 8px;
-        margin-top: 12px;
-    }
-
-    .button-row button {
-        width: 100%;
-        margin-top: 0;
-    }
-
+    /* VIDEO FRAME */
     #videoWrapper {
-        margin-top: 20px;
-        width: 260px;
-        height: 200px;
-        border-radius: 18px;
+        margin-top: 12px;
+        width: 100%;
+        max-width: 320px;
+        height: 210px;
+        border-radius: 20px;
         overflow: hidden;
-        border: 2px solid #e5e7eb;
+        border: 1px solid rgba(148, 163, 184, 0.6);
         display: none;
         position: relative;
-        background: #000;
+        background: #020617;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
     }
 
     #videoWrapper video,
@@ -146,20 +120,85 @@
     .video-overlay {
         position: absolute;
         inset: 0;
-        border-radius: 18px;
-        box-shadow: 0 0 0 9999px rgba(0,0,0,0.20);
-        border: 2px dashed rgba(255,255,255,0.9);
+        border-radius: 20px;
+        box-shadow: 0 0 0 9999px rgba(0,0,0,0.30);
+        border: 2px dashed rgba(226, 232, 240, 0.9);
         pointer-events: none;
     }
 
+    /* BUTTONS */
+    .button-row {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        border: none;
+        padding: 8px 20px;
+        border-radius: 18px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    #startBtn {
+        flex: 1;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #0f172a;
+        box-shadow: 0 12px 35px rgba(34, 197, 94, 0.45);
+    }
+
+    #startBtn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 16px 40px rgba(34, 197, 94, 0.65);
+    }
+
+    #stopBtn {
+        flex: 1;
+        background: rgba(15,23,42,0.85);
+        color: #e5e7eb;
+        border: 1px solid rgba(148,163,184,0.6);
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.7);
+    }
+
+    #stopBtn:hover:not(:disabled) {
+        background: rgba(15,23,42,1);
+        transform: translateY(-1px);
+    }
+
+    #uploadBtn {
+        margin-top: 10px;
+        background: rgba(15,23,42,0.85);
+        color: #e5e7eb;
+        border: 1px solid rgba(148,163,184,0.6);
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.7);
+    }
+
+    #uploadBtn:hover {
+        background: rgba(15,23,42,1);
+        transform: translateY(-1px);
+    }
+
+    /* RESULT BOX */
     #resultBox {
         margin-top: 18px;
         padding: 12px 14px;
-        border-radius: 14px;
-        border: 1px dashed #d1d5db;
-        background: #f9fafb;
+        border-radius: 16px;
+        border: 1px dashed rgba(148, 163, 184, 0.8);
+        background: rgba(15, 23, 42, 0.9);
         font-size: 13px;
-        color: #374151;
+        color: #e5e7eb;
         width: 100%;
         word-break: break-all;
         display: none;
@@ -167,61 +206,78 @@
     }
 
     #resultLabel {
-        font-size: 11px;
+        font-size: 0.7rem;
         text-transform: uppercase;
-        letter-spacing: .08em;
-        color: #9ca3af;
+        letter-spacing: .12em;
+        color: #94a3b8;
         margin-bottom: 4px;
     }
 
     #resultText {
-        font-size: 13px;
+        font-size: 0.9rem;
         font-weight: 500;
-        color: #111827;
+        color: #e5e7eb;
     }
 
     .result-actions {
         display: flex;
         gap: 8px;
         margin-top: 10px;
+        flex-wrap: wrap;
     }
 
     .result-actions button {
         margin-top: 0;
-        padding: 10px;
-        font-size: 13px;
-        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        border-radius: 14px;
     }
 
     .open-btn {
-        background: #10b981;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #0f172a;
+        box-shadow: 0 10px 28px rgba(34, 197, 94, 0.4);
     }
 
     .open-btn:hover {
-        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 14px 36px rgba(34, 197, 94, 0.6);
     }
 
     .copy-btn {
-        background: #e5e7eb;
-        color: #111827;
+        background: rgba(15,23,42,0.85);
+        color: #e5e7eb;
+        border: 1px solid rgba(148,163,184,0.6);
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.7);
     }
 
     .copy-btn:hover {
-        background: #d1d5db;
+        background: rgba(15,23,42,1);
+        transform: translateY(-1px);
     }
 
     .status-text {
-        margin-top: 10px;
-        font-size: 12px;
-        color: #6b7280;
+        margin-top: 12px;
+        font-size: 0.78rem;
+        color: #64748b;
     }
 
     .status-text.error {
-        color: #b91c1c;
+        color: #f97373;
     }
 
     #hiddenCanvas {
         display: none;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 24px 20px 22px;
+            border-radius: 24px;
+        }
+        .title {
+            font-size: 1.5rem;
+        }
     }
 </style>
 </head>
@@ -232,7 +288,7 @@
 
 <div class="container">
     <div class="title">Barcode Reader</div>
-    <div class="subtitle">Scan with camera or upload a barcode image.</div>
+    <div class="subtitle">Scan with camera or upload a barcode image for instant decoding.</div>
 
     <div id="videoWrapper">
         <div class="video-overlay"></div>
@@ -240,10 +296,10 @@
 
     <div class="button-row">
         <button id="startBtn">Start Scanning</button>
-        <button id="stopBtn" class="secondary" style="display:none;">Stop</button>
+        <button id="stopBtn" style="display:none;">Stop</button>
     </div>
 
-    <button id="uploadBtn" class="secondary">Upload Barcode Image</button>
+    <button id="uploadBtn">Upload Barcode Image</button>
     <input type="file" id="fileInput" accept="image/*" style="display:none;">
 
     <div id="resultBox">
@@ -255,7 +311,9 @@
         </div>
     </div>
 
-    <div id="status" class="status-text">Camera is idle. Use "Start Scanning" or "Upload Barcode Image".</div>
+    <div id="status" class="status-text">
+        Camera is idle. Use "Start Scanning" or "Upload Barcode Image".
+    </div>
 </div>
 
 <canvas id="hiddenCanvas"></canvas>
