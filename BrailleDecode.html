@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="Braille.png" type="image/png">
+  <meta charset="UTF-8" />
+  <title>Braille Decoder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #020617;
+      overflow: hidden;
+      position: relative;
+      color: #e5e7eb;
+    }
+
+    /* 🔵 Falling Braille background canvas */
+    #brailleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.22;
+    }
+
+    .container {
+      position: relative;
+      z-index: 5;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.5),
+        0 0 0 1px rgba(148, 163, 184, 0.25);
+      backdrop-filter: blur(20px);
+    }
+
+    .header {
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      resize: vertical;
+      min-height: 80px;
+      max-height: 180px;
+      font-size: 1.1rem;
+      outline: none;
+      font-family: "SF Mono", Consolas, monospace, "Segoe UI Symbol";
+    }
+
+    .row {
+      margin-bottom: 14px;
+    }
+
+    .output {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 12px 14px;
+      min-height: 70px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .placeholder {
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔵 BACKGROUND ANIMATION CANVAS -->
+  <canvas id="brailleCanvas"></canvas>
+
+  <div class="container">
+    <div class="header">
+      <div class="title">Braille Decoder</div>
+      <div class="subtitle">Paste Braille, click Decode, then copy the text.</div>
+    </div>
+
+    <div class="row">
+      <div class="field-label">Braille Input</div>
+      <textarea id="brailleInput" placeholder="Example: ⠓⠑⠇⠇⠕ ⠺⠕⠗⠇⠙"></textarea>
+      <div class="helper-text">
+        Spaces separate words. Numbers use the Braille number sign ⠼ followed by ⠁–⠚.
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn-secondary" onclick="clearAll()">Clear</button>
+      <button class="btn-secondary" id="copyBtn" onclick="copyText()" disabled>Copy Text</button>
+      <button class="btn-primary" onclick="handleDecode()">Decode</button>
+    </div>
+
+    <!-- OUTPUT HIDDEN INITIALLY -->
+    <div id="outputContainer" class="row" style="margin-top:16px; display:none;">
+      <div class="field-label">Decoded Text</div>
+      <div id="textOutput" class="output">
+        <span id="textPlaceholder" class="placeholder">
+          Click “Decode” to see the result...
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ------------------------------------------
+       🔠 BRAILLE MAPS (Grade 1)
+    ------------------------------------------- */
+    const brailleLetterMap = {
+      'A': '⠁', 'B': '⠃', 'C': '⠉', 'D': '⠙',
+      'E': '⠑', 'F': '⠋', 'G': '⠛', 'H': '⠓',
+      'I': '⠊', 'J': '⠚', 'K': '⠅', 'L': '⠇',
+      'M': '⠍', 'N': '⠝', 'O': '⠕', 'P': '⠏',
+      'Q': '⠟', 'R': '⠗', 'S': '⠎', 'T': '⠞',
+      'U': '⠥', 'V': '⠧', 'W': '⠺', 'X': '⠭',
+      'Y': '⠽', 'Z': '⠵'
+    };
+
+    // Reverse: cell -> letter
+    const cellToLetter = {};
+    for (const [ch, cell] of Object.entries(brailleLetterMap)) {
+      cellToLetter[cell] = ch;
+    }
+
+    // Numbers: ⠼ + A–J patterns
+    const digitCellMap = {
+      '⠁': '1',
+      '⠃': '2',
+      '⠉': '3',
+      '⠙': '4',
+      '⠑': '5',
+      '⠋': '6',
+      '⠛': '7',
+      '⠓': '8',
+      '⠊': '9',
+      '⠚': '0'
+    };
+
+    function decodeBraille(str) {
+      const input = str.trim();
+      if (!input) return '';
+
+      let result = '';
+      const chars = Array.from(input);
+
+      for (let i = 0; i < chars.length; i++) {
+        const ch = chars[i];
+
+        // Preserve spaces as word separators
+        if (ch === ' ') {
+          result += ' ';
+          continue;
+        }
+
+        // Number sign: ⠼ then a cell A–J pattern
+        if (ch === '⠼') {
+          const next = chars[i + 1];
+          if (next && digitCellMap[next]) {
+            result += digitCellMap[next];
+            i++; // skip next since consumed
+          } else {
+            result += '?';
+          }
+          continue;
+        }
+
+        // Regular letter
+        if (cellToLetter[ch]) {
+          result += cellToLetter[ch];
+        } else {
+          // Unsupported symbol
+          result += '?';
+        }
+      }
+
+      return result;
+    }
+
+    /* ------------------------------------------
+       🔍 HANDLE DECODE
+    ------------------------------------------- */
+    function handleDecode() {
+      const input = document.getElementById("brailleInput").value;
+      const outputContainer = document.getElementById("outputContainer");
+      const outputDiv = document.getElementById("textOutput");
+      const placeholder = document.getElementById("textPlaceholder");
+      const copyBtn = document.getElementById("copyBtn");
+
+      if (!input.trim()) {
+        alert("Please paste some Braille characters to decode.");
+        return;
+      }
+
+      const decoded = decodeBraille(input);
+
+      outputContainer.style.display = "block";
+      placeholder.style.display = "none";
+      outputDiv.textContent = decoded;
+      copyBtn.disabled = !decoded.trim();
+    }
+
+    /* ------------------------------------------
+       📋 COPY TEXT
+    ------------------------------------------- */
+    function copyText() {
+      const text = document.getElementById("textOutput").textContent;
+      if (!text.trim()) return;
+
+      navigator.clipboard.writeText(text);
+      alert("Copied!");
+    }
+
+    /* ------------------------------------------
+       🧹 CLEAR
+    ------------------------------------------- */
+    function clearAll() {
+      document.getElementById("brailleInput").value = "";
+      document.getElementById("outputContainer").style.display = "none";
+      document.getElementById("copyBtn").disabled = true;
+    }
+
+    /* ------------------------------------------
+       💧 BRAILLE-STYLE RAIN BACKGROUND
+    ------------------------------------------- */
+    const canvas = document.getElementById("brailleCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", () => {
+      resize();
+      initDrops();
+    });
+
+    const brailleSymbols = [
+      '⠁','⠃','⠉','⠙','⠑','⠋','⠛','⠓','⠊','⠚',
+      '⠅','⠇','⠍','⠝','⠕','⠏','⠟','⠗','⠎','⠞',
+      '⠥','⠧','⠺','⠭','⠽','⠵','⠼'
+    ];
+
+    const drops = [];
+    const fontSize = 22;
+    let columns = Math.floor(canvas.width / fontSize);
+
+    function initDrops() {
+      columns = Math.floor(canvas.width / fontSize);
+      drops.length = 0;
+      for (let i = 0; i < columns; i++) {
+        drops[i] = Math.random() * canvas.height;
+      }
+    }
+    initDrops();
+
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#22c55e";
+      ctx.font = fontSize + "px 'Segoe UI Symbol', monospace";
+
+      drops.forEach((y, i) => {
+        const text = brailleSymbols[Math.floor(Math.random() * brailleSymbols.length)];
+        const x = i * fontSize;
+        ctx.fillText(text, x, y);
+
+        if (y > canvas.height && Math.random() > 0.96) drops[i] = 0;
+        else drops[i] = y + fontSize;
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
