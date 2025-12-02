@@ -608,6 +608,11 @@
       filter: drop-shadow(0 0 12px rgba(244, 114, 182, 0.7));
     }
 
+    /* NEW: Braille icon glow */
+    .option-card[data-type="braille"] .option-icon {
+      filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.9));
+    }
+
     .option-desc {
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -1023,6 +1028,48 @@
               <span>Training friendly</span>
             </div>
           </article>
+
+          <!-- NEW: Braille Generator -->
+          <article
+            class="option-card"
+            tabindex="0"
+            data-type="braille"
+            data-action="open-braille-generator"
+          >
+            <div class="option-title">
+              <span>Braille Generator</span>
+              <span class="option-icon">⠃⠗</span>
+            </div>
+            <p class="option-desc">
+              Convert plain text into Braille dot patterns. Great for learning,
+              accessibility prototyping and assistive tools.
+            </p>
+            <div class="option-footer">
+              <span class="tag">Text → Braille</span>
+              <span class="badge">Accessibility</span>
+            </div>
+          </article>
+
+          <!-- NEW: Braille Decoder -->
+          <article
+            class="option-card"
+            tabindex="0"
+            data-type="braille"
+            data-action="open-braille-decoder"
+          >
+            <div class="option-title">
+              <span>Braille Decoder</span>
+              <span class="option-icon">⠿⠿</span>
+            </div>
+            <p class="option-desc">
+              Enter Braille dot patterns and decode them back into readable
+              text. Perfect for practice and verification.
+            </p>
+            <div class="option-footer">
+              <span class="tag">Braille → Text</span>
+              <span>Practice friendly</span>
+            </div>
+          </article>
         </div>
       </section>
     </main>
@@ -1078,22 +1125,29 @@
     function handleToolOpen(action) {
       switch (action) {
         case "open-qr-generator":
-          window.open("QR.html", "_blank");
+          window.open("file:///D:/Server/QR.html", "_blank");
           break;
         case "open-qr-reader":
-          window.open("QR reader.html", "_blank");
+          window.open("file:///D:/Server/QR reader.html", "_blank");
           break;
         case "open-barcode-generator":
-          window.open("Bar Code.html", "_blank");
+          window.open("file:///D:/Server/Bar Code.html", "_blank");
           break;
         case "open-barcode-reader":
-          window.open("Bar Code Reader.html", "_blank");
+          window.open("file:///D:/Server/Bar Code Reader.html", "_blank");
           break;
         case "open-morse-generator":
-          window.open("Morse.html", "_blank");
+          window.open("file:///D:/Server/Morse.html", "_blank");
           break;
         case "open-morse-decoder":
-          window.open("Morse Decode.html", "_blank");
+          window.open("file:///D:/Server/Morse DeCode.html", "_blank");
+          break;
+        // NEW: Braille routes
+        case "open-braille-generator":
+          window.open("file:///D:/Server/Braille.html", "_blank");
+          break;
+        case "open-braille-decoder":
+          window.open("file:///D:/Server/BrailleDeCode.html", "_blank");
           break;
         default:
           console.log("Unknown action:", action);
@@ -1149,5 +1203,3 @@
   </script>
 </body>
 </html>
-
-
