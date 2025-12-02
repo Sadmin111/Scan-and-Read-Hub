@@ -516,6 +516,62 @@
       }
     }
 
+    /* === LIST VIEW: single-row option style === */
+    .options-grid.list-view {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.55rem;
+    }
+
+    .options-grid.list-view .option-card {
+      padding: 0.85rem 1rem;
+      border-radius: 0.9rem;
+      background: rgba(15, 23, 42, 0.98);
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    /* left: title + icon */
+    .options-grid.list-view .option-title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.6rem;
+    }
+
+    /* hide long description */
+    .options-grid.list-view .option-desc {
+      display: none;
+    }
+
+    /* right: compact footer with only tag/badge */
+    .options-grid.list-view .option-footer {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .options-grid.list-view .option-footer span:not(.tag):not(.badge) {
+      display: none;
+    }
+
+    .options-grid.list-view .tag,
+    .options-grid.list-view .badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.8rem;
+    }
+
+    .options-grid.list-view .option-icon {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
     .option-card {
       position: relative;
       border-radius: var(--radius-xl);
@@ -790,6 +846,18 @@
         gap: 0.3rem;
       }
 
+      /* list-view mobile tweaks */
+      .options-grid.list-view .option-card {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+
+      .options-grid.list-view .option-footer {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
       .app-footer {
         flex-direction: column;
         align-items: flex-start;
@@ -904,7 +972,7 @@
           <div class="options-toggle">
             Layout:
             <button class="active" type="button" id="layout-grid">Grid</button>
-            <button type="button" id="layout-compact">Compact</button>
+            <button type="button" id="layout-list">List</button>
           </div>
         </div>
 
@@ -1091,18 +1159,18 @@
 
     const grid = document.getElementById("options-grid");
     const layoutGridBtn = document.getElementById("layout-grid");
-    const layoutCompactBtn = document.getElementById("layout-compact");
+    const layoutListBtn = document.getElementById("layout-list");
 
     layoutGridBtn.addEventListener("click", () => {
       layoutGridBtn.classList.add("active");
-      layoutCompactBtn.classList.remove("active");
-      grid.style.gap = "1rem";
+      layoutListBtn.classList.remove("active");
+      grid.classList.remove("list-view");
     });
 
-    layoutCompactBtn.addEventListener("click", () => {
-      layoutCompactBtn.classList.add("active");
+    layoutListBtn.addEventListener("click", () => {
+      layoutListBtn.classList.add("active");
       layoutGridBtn.classList.remove("active");
-      grid.style.gap = "0.6rem";
+      grid.classList.add("list-view");
     });
 
     const optionCards = document.querySelectorAll(".option-card");
@@ -1125,28 +1193,29 @@
     function handleToolOpen(action) {
       switch (action) {
         case "open-qr-generator":
-          window.open("QR.html", "_blank");
+          window.open("file:///D:/Server/QR.html", "_blank");
           break;
         case "open-qr-reader":
-          window.open("QR reader.html", "_blank");
+          window.open("file:///D:/Server/QR reader.html", "_blank");
           break;
         case "open-barcode-generator":
-          window.open("Bar Code.html", "_blank");
+          window.open("file:///D:/Server/Bar Code.html", "_blank");
           break;
         case "open-barcode-reader":
-          window.open("Bar Code Reader.html", "_blank");
+          window.open("file:///D:/Server/Bar Code Reader.html", "_blank");
           break;
         case "open-morse-generator":
-          window.open("Morse.html", "_blank");
+          window.open("file:///D:/Server/Morse.html", "_blank");
           break;
         case "open-morse-decoder":
-          window.open("Morse Decode.html", "_blank");
+          window.open("file:///D:/Server/Morse DeCode.html", "_blank");
           break;
+        // NEW: Braille routes
         case "open-braille-generator":
-          window.open("Braille.html", "_blank");
+          window.open("file:///D:/Server/Braille.html", "_blank");
           break;
         case "open-braille-decoder":
-          window.open("BrailleDecode.html", "_blank");
+          window.open("file:///D:/Server/BrailleDeCode.html", "_blank");
           break;
         default:
           console.log("Unknown action:", action);
@@ -1202,6 +1271,3 @@
   </script>
 </body>
 </html>
-
-
-
