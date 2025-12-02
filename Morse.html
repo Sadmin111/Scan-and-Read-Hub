@@ -104,6 +104,7 @@
       max-height: 180px;
       overflow-y: auto;
       font-family: "SF Mono", Consolas, monospace;
+      font-size: 0.9rem;
     }
 
     .placeholder {
@@ -138,7 +139,6 @@
       color: #e5e7eb;
       border: 1px solid rgba(148, 163, 184, 0.5);
     }
-
   </style>
 </head>
 <body>
@@ -170,6 +170,7 @@
         <span id="morsePlaceholder" class="placeholder">
           Click “Generate Morse” to see the result...
         </span>
+        <span id="morseResult"></span>
       </div>
     </div>
 
@@ -192,14 +193,18 @@
       '8': '---..', '9': '----.'
     };
 
+    // ✅ Character-by-character conversion
     function convertToMorse(str) {
       return str
         .toUpperCase()
-        .split(' ')
-        .map(word =>
-          word.split('').map(ch => morseMap[ch] || '').join(' ')
-        )
-        .join(' / ');
+        .split('')
+        .map(ch => {
+          if (ch === ' ') return '/';          // word separator
+          if (morseMap[ch]) return morseMap[ch];
+          return '';                           // ignore unsupported chars
+        })
+        .filter(Boolean)
+        .join(' ');
     }
 
     /* ------------------------------------------
@@ -208,8 +213,8 @@
     function handleGenerate() {
       const input = document.getElementById("textInput").value;
       const outputContainer = document.getElementById("outputContainer");
-      const outputDiv = document.getElementById("morseOutput");
       const placeholder = document.getElementById("morsePlaceholder");
+      const resultSpan = document.getElementById("morseResult");
       const copyBtn = document.getElementById("copyBtn");
 
       if (!input.trim()) {
@@ -220,8 +225,10 @@
       const morse = convertToMorse(input);
 
       outputContainer.style.display = "block";
-      placeholder.style.display = "none";
-      outputDiv.textContent = morse;
+      if (placeholder) {
+        placeholder.style.display = "none";
+      }
+      resultSpan.textContent = morse;
       copyBtn.disabled = false;
     }
 
@@ -229,9 +236,8 @@
        📋 COPY
     ------------------------------------------- */
     function copyMorse() {
-      navigator.clipboard.writeText(
-        document.getElementById("morseOutput").textContent
-      );
+      const resultSpan = document.getElementById("morseResult");
+      navigator.clipboard.writeText(resultSpan.textContent || '');
       alert("Copied!");
     }
 
@@ -242,6 +248,11 @@
       document.getElementById("textInput").value = "";
       document.getElementById("outputContainer").style.display = "none";
       document.getElementById("copyBtn").disabled = true;
+
+      const placeholder = document.getElementById("morsePlaceholder");
+      const resultSpan = document.getElementById("morseResult");
+      if (placeholder) placeholder.style.display = "inline";
+      if (resultSpan) resultSpan.textContent = "";
     }
 
     /* ------------------------------------------
