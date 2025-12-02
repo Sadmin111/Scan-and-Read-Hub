@@ -184,6 +184,7 @@
         <span id="braillePlaceholder" class="placeholder">
           Click “Generate Braille” to see the result...
         </span>
+        <span id="brailleResult"></span>
       </div>
     </div>
 
@@ -239,8 +240,8 @@
     function handleGenerate() {
       const input = document.getElementById("textInput").value;
       const outputContainer = document.getElementById("outputContainer");
-      const outputDiv = document.getElementById("brailleOutput");
       const placeholder = document.getElementById("braillePlaceholder");
+      const resultSpan = document.getElementById("brailleResult");
       const copyBtn = document.getElementById("copyBtn");
 
       if (!input.trim()) {
@@ -251,16 +252,21 @@
       const braille = convertToBraille(input);
 
       outputContainer.style.display = "block";
-      placeholder.style.display = "none";
-      outputDiv.textContent = braille;
+      if (placeholder) {
+        placeholder.style.display = "none";
+      }
+      resultSpan.textContent = braille;
       copyBtn.disabled = !braille.trim();
+
+      // Debug (optional, for you): see input/output in console
+      // console.log("Input:", input, "Braille:", braille);
     }
 
     /* ------------------------------------------
        📋 COPY
     ------------------------------------------- */
     function copyBraille() {
-      const text = document.getElementById("brailleOutput").textContent;
+      const text = document.getElementById("brailleResult").textContent;
       if (!text.trim()) return;
 
       navigator.clipboard.writeText(text);
@@ -274,6 +280,11 @@
       document.getElementById("textInput").value = "";
       document.getElementById("outputContainer").style.display = "none";
       document.getElementById("copyBtn").disabled = true;
+
+      const placeholder = document.getElementById("braillePlaceholder");
+      const resultSpan = document.getElementById("brailleResult");
+      if (placeholder) placeholder.style.display = "inline";
+      if (resultSpan) resultSpan.textContent = "";
     }
 
     /* ------------------------------------------
