@@ -213,7 +213,7 @@
       margin-top: 1rem;
     }
 
-    .hero-badge span {
+    .hero-badge(span) {
       color: #e5e7eb;
       font-weight: 500;
     }
@@ -534,7 +534,6 @@
       gap: 0.75rem;
     }
 
-    /* left: title + icon */
     .options-grid.list-view .option-title {
       flex: 1;
       display: flex;
@@ -543,12 +542,10 @@
       gap: 0.6rem;
     }
 
-    /* hide long description */
     .options-grid.list-view .option-desc {
       display: none;
     }
 
-    /* right: compact footer with only tag/badge */
     .options-grid.list-view .option-footer {
       margin-top: 0;
       display: flex;
@@ -664,7 +661,6 @@
       filter: drop-shadow(0 0 12px rgba(244, 114, 182, 0.7));
     }
 
-    /* NEW: Braille icon glow */
     .option-card[data-type="braille"] .option-icon {
       filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.9));
     }
@@ -676,13 +672,22 @@
       flex: 1;
     }
 
+    /* UPDATED FOOTER */
     .option-footer {
       margin-top: 0.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 0.35rem;
+      flex-wrap: wrap;
       font-size: 0.75rem;
       color: var(--text-muted);
+    }
+
+    /* only stretch plain text meta, not badges */
+    .option-footer span:last-child:not(.badge) {
+      flex: 1;
+      text-align: right;
     }
 
     .tag {
@@ -846,7 +851,6 @@
         gap: 0.3rem;
       }
 
-      /* list-view mobile tweaks */
       .options-grid.list-view .option-card {
         flex-wrap: wrap;
         align-items: flex-start;
@@ -977,12 +981,7 @@
         </div>
 
         <div class="options-grid" id="options-grid">
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="qr"
-            data-action="open-qr-generator"
-          >
+          <article class="option-card" tabindex="0" data-type="qr" data-action="open-qr-generator">
             <div class="option-title">
               <span>QR Generator</span>
               <span class="option-icon">▢▢</span>
@@ -997,12 +996,7 @@
             </div>
           </article>
 
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="qr"
-            data-action="open-qr-reader"
-          >
+          <article class="option-card" tabindex="0" data-type="qr" data-action="open-qr-reader">
             <div class="option-title">
               <span>QR Reader</span>
               <span class="option-icon">📷</span>
@@ -1017,12 +1011,7 @@
             </div>
           </article>
 
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="barcode"
-            data-action="open-barcode-generator"
-          >
+          <article class="option-card" tabindex="0" data-type="barcode" data-action="open-barcode-generator">
             <div class="option-title">
               <span>Barcode Generator</span>
               <span class="option-icon">▮▯▮▮▯</span>
@@ -1037,12 +1026,7 @@
             </div>
           </article>
 
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="barcode"
-            data-action="open-barcode-reader"
-          >
+          <article class="option-card" tabindex="0" data-type="barcode" data-action="open-barcode-reader">
             <div class="option-title">
               <span>Barcode Reader</span>
               <span class="option-icon">📡</span>
@@ -1057,12 +1041,7 @@
             </div>
           </article>
 
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="morse"
-            data-action="open-morse-generator"
-          >
+          <article class="option-card" tabindex="0" data-type="morse" data-action="open-morse-generator">
             <div class="option-title">
               <span>Morse Code Generator</span>
               <span class="option-icon">· − · −</span>
@@ -1077,12 +1056,7 @@
             </div>
           </article>
 
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="morse"
-            data-action="open-morse-decoder"
-          >
+          <article class="option-card" tabindex="0" data-type="morse" data-action="open-morse-decoder">
             <div class="option-title">
               <span>Morse Code Decoder</span>
               <span class="option-icon">− − · ·</span>
@@ -1097,13 +1071,7 @@
             </div>
           </article>
 
-          <!-- NEW: Braille Generator -->
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="braille"
-            data-action="open-braille-generator"
-          >
+          <article class="option-card" tabindex="0" data-type="braille" data-action="open-braille-generator">
             <div class="option-title">
               <span>Braille Generator</span>
               <span class="option-icon">⠃⠗</span>
@@ -1118,13 +1086,7 @@
             </div>
           </article>
 
-          <!-- NEW: Braille Decoder -->
-          <article
-            class="option-card"
-            tabindex="0"
-            data-type="braille"
-            data-action="open-braille-decoder"
-          >
+          <article class="option-card" tabindex="0" data-type="braille" data-action="open-braille-decoder">
             <div class="option-title">
               <span>Braille Decoder</span>
               <span class="option-icon">⠿⠿</span>
@@ -1193,29 +1155,28 @@
     function handleToolOpen(action) {
       switch (action) {
         case "open-qr-generator":
-          window.open("QR.html", "_blank");
+          window.open("file:///D:/Server/QR.html", "_blank");
           break;
         case "open-qr-reader":
-          window.open("QR reader.html", "_blank");
+          window.open("file:///D:/Server/QR reader.html", "_blank");
           break;
         case "open-barcode-generator":
-          window.open("Bar Code.html", "_blank");
+          window.open("file:///D:/Server/Bar Code.html", "_blank");
           break;
         case "open-barcode-reader":
-          window.open("Bar Code Reader.html", "_blank");
+          window.open("file:///D:/Server/Bar Code Reader.html", "_blank");
           break;
         case "open-morse-generator":
-          window.open("Morse.html", "_blank");
+          window.open("file:///D:/Server/Morse.html", "_blank");
           break;
         case "open-morse-decoder":
-          window.open("Morse Decode.html", "_blank");
+          window.open("file:///D:/Server/Morse DeCode.html", "_blank");
           break;
-        // NEW: Braille routes
         case "open-braille-generator":
-          window.open("Braille.html", "_blank");
+          window.open("file:///D:/Server/Braille.html", "_blank");
           break;
         case "open-braille-decoder":
-          window.open("BrailleDecode.html", "_blank");
+          window.open("file:///D:/Server/BrailleDeCode.html", "_blank");
           break;
         default:
           console.log("Unknown action:", action);
@@ -1271,4 +1232,3 @@
   </script>
 </body>
 </html>
-
