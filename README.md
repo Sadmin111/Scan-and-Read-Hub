@@ -1,1 +1,1 @@
-# Scan-and-Read-Hub
+# CodeScan Hub
