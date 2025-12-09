@@ -751,139 +751,122 @@
     }
 
     /* MOBILE FIX */
-    @media (max-width: 600px) {
-      body {
-        padding: 1rem;
-        align-items: flex-start;
-        justify-content: flex-start;
-      }
+   /* MOBILE FIX — PERFECT DESKTOP-LIKE LOOK */
+@media (max-width: 600px) {
 
-      .app-shell {
-        padding: 1.25rem 1.1rem 1.5rem;
-        border-radius: 1.25rem;
-      }
+  body {
+    padding: 1rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 
-      .app-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-      }
+  .app-shell {
+    padding: 1.25rem 1.1rem 1.5rem;
+    border-radius: 1.25rem;
+  }
 
-      .header-pill {
-        align-self: stretch;
-        justify-content: center;
-      }
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
 
-      .hero {
-        gap: 1.2rem;
-        margin-bottom: 1.5rem;
-      }
+  .header-pill {
+    align-self: stretch;
+    justify-content: center;
+  }
 
-      .hero-text h1 {
-        font-size: 1.6rem;
-        line-height: 1.15;
-      }
+  .hero {
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
 
-      .hero-subtitle {
-        font-size: 0.9rem;
-      }
+  .hero-text h1 {
+    font-size: 1.55rem;
+    line-height: 1.15;
+  }
 
-      .chip-row {
-        gap: 0.4rem;
-      }
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
 
-      .chip {
-        font-size: 0.72rem;
-        padding: 0.3rem 0.6rem;
-      }
+  /* ----------------------------
+     HERO VISUAL FIX (KEY PART)
+     Makes mobile match desktop
+     ---------------------------- */
 
-      .hero-visual {
-        margin-top: 0.5rem;
-        min-height: 180px;
-        padding: 1rem;
-      }
+  .hero-visual {
+    margin-top: 0.7rem;
+    min-height: 210px;
+    padding: 1rem;
+  }
 
-      /* Extra bottom space so QR + pill fit */
-      .visual-card {
-        min-height: 150px;
-        padding-bottom: 90px;
-      }
+  .visual-card {
+    min-height: 170px;
+    padding: 0;
+    position: relative;
+  }
 
-      /* Move pill above the QR box */
-      .matrix-glass-text {
-        left: 12px;
-        right: 12px;
-        bottom: 80px;
-        padding: 8px 14px;
-        font-size: 0.72rem;
-        letter-spacing: 0.14em;
-        text-align: center;
-      }
+  /* Center pill exactly like desktop, not stretched */
+  .matrix-glass-text {
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 10px 26px;
+    font-size: 0.78rem;
+    letter-spacing: 0.17em;
+    white-space: nowrap;
+    text-align: center;
+  }
 
-      /* Slightly smaller QR on mobile */
-      .qr-dummy {
-        width: 68px;
-        height: 68px;
-        right: 14px;
-        bottom: 14px;
-      }
+  /* Keep QR full-size, not reduced */
+  .qr-dummy {
+    width: 78px;
+    height: 78px;
+    right: 16px;
+    bottom: 16px;
+  }
 
-      .options-section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.6rem;
-      }
+  /* ---------------------------- */
 
-      .options-section-title {
-        font-size: 0.8rem;
-        letter-spacing: 0.15em;
-      }
+  .options-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
 
-      .options-grid {
-        gap: 0.85rem;
-      }
+  .options-grid {
+    gap: 0.85rem;
+  }
 
-      .option-card {
-        padding: 0.9rem;
-        border-radius: 1.1rem;
-      }
+  .option-card {
+    padding: 0.9rem;
+    border-radius: 1.1rem;
+  }
 
-      .option-title {
-        font-size: 0.9rem;
-      }
+  .option-title {
+    font-size: 0.9rem;
+  }
 
-      .option-desc {
-        font-size: 0.78rem;
-      }
+  .option-desc {
+    font-size: 0.78rem;
+  }
 
-      .option-footer {
-        font-size: 0.72rem;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.3rem;
-      }
+  .option-footer {
+    font-size: 0.72rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
 
-      .options-grid.list-view .option-card {
-        flex-wrap: wrap;
-        align-items: flex-start;
-      }
+  .app-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
 
-      .options-grid.list-view .option-footer {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .app-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-
-      .footer-links {
-        flex-wrap: wrap;
-      }
-    }
   </style>
 </head>
 <body>
