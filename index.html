@@ -750,6 +750,7 @@
       outline-offset: 3px;
     }
 
+    /* MOBILE FIX */
     @media (max-width: 600px) {
       body {
         padding: 1rem;
@@ -802,18 +803,29 @@
         padding: 1rem;
       }
 
+      /* Extra bottom space so QR + pill fit */
       .visual-card {
-        min-height: 130px;
+        min-height: 150px;
+        padding-bottom: 90px;
       }
 
+      /* Move pill above the QR box */
       .matrix-glass-text {
         left: 12px;
         right: 12px;
-        bottom: 14px;
+        bottom: 80px;
         padding: 8px 14px;
         font-size: 0.72rem;
         letter-spacing: 0.14em;
         text-align: center;
+      }
+
+      /* Slightly smaller QR on mobile */
+      .qr-dummy {
+        width: 68px;
+        height: 68px;
+        right: 14px;
+        bottom: 14px;
       }
 
       .options-section-header {
@@ -1232,5 +1244,3 @@
   </script>
 </body>
 </html>
-
-
