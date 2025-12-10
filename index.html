@@ -307,16 +307,11 @@
       color: #bae6fd;
     }
 
-    /* -------- NEW: .visual-card layout changed to side-by-side flex -------- */
     .visual-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
       position: relative;
       margin-top: auto;
       border-radius: 1.4rem;
-      padding: 16px;
+      padding: 0;
       background: radial-gradient(circle at top left, #020617 0, #020617 40%, #022c22 100%);
       border: 1px solid rgba(34, 197, 94, 0.65);
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
@@ -324,23 +319,19 @@
       min-height: 140px;
     }
 
-    /* matrix canvas should fill available space */
     #matrix-canvas {
-      flex: 1 1 auto;
       width: 100%;
-      height: 120px;
+      height: 100%;
       display: block;
-      border-radius: 0.9rem;
     }
 
-    /* Pill (Generate & Scan) now inline and non-positioned so it won't overlap QR */
     .matrix-glass-text {
-      position: relative;
-      z-index: 3;
-      margin: 0;
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
       padding: 10px 24px;
       border-radius: 999px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       font-weight: 600;
@@ -354,13 +345,13 @@
         0 14px 30px rgba(15, 23, 42, 0.85);
       -webkit-mask-image: -webkit-radial-gradient(white, black);
       pointer-events: none;
-      white-space: nowrap;
-      flex-shrink: 0;
+      z-index: 2;
     }
 
-    /* QR box now sits to the right (or left in RTL) and doesn't overlap */
     .qr-dummy {
-      position: relative;
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
       width: 78px;
       height: 78px;
       border-radius: 0.9rem;
@@ -372,10 +363,6 @@
         0 0 30px rgba(22, 163, 74, 0.5);
       overflow: hidden;
       pointer-events: none;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .qr-dummy::before {
@@ -764,137 +751,122 @@
     }
 
     /* MOBILE FIX */
-    @media (max-width: 600px) {
+   /* MOBILE FIX — PERFECT DESKTOP-LIKE LOOK */
+@media (max-width: 600px) {
 
-      body {
-        padding: 1rem;
-        align-items: flex-start;
-        justify-content: flex-start;
-      }
+  body {
+    padding: 1rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 
-      .app-shell {
-        padding: 1.25rem 1.1rem 1.5rem;
-        border-radius: 1.25rem;
-      }
+  .app-shell {
+    padding: 1.25rem 1.1rem 1.5rem;
+    border-radius: 1.25rem;
+  }
 
-      .app-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-      }
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
 
-      .header-pill {
-        align-self: stretch;
-        justify-content: center;
-      }
+  .header-pill {
+    align-self: stretch;
+    justify-content: center;
+  }
 
-      .hero {
-        gap: 1.2rem;
-        margin-bottom: 1.5rem;
-      }
+  .hero {
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
 
-      .hero-text h1 {
-        font-size: 1.55rem;
-        line-height: 1.15;
-      }
+  .hero-text h1 {
+    font-size: 1.55rem;
+    line-height: 1.15;
+  }
 
-      .hero-subtitle {
-        font-size: 0.9rem;
-      }
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
 
-      .chip-row {
-        gap: 0.4rem;
-      }
+  /* ----------------------------
+     HERO VISUAL FIX (KEY PART)
+     Makes mobile match desktop
+     ---------------------------- */
 
-      .chip {
-        font-size: 0.72rem;
-        padding: 0.3rem 0.6rem;
-      }
+  .hero-visual {
+    margin-top: 0.7rem;
+    min-height: 210px;
+    padding: 1rem;
+  }
 
-      /* HERO VISUAL — keep side-by-side on mobile but scale down */
-      .hero-visual {
-        margin-top: 0.7rem;
-        min-height: 210px;
-        padding: 12px;
-      }
+  .visual-card {
+    min-height: 170px;
+    padding: 0;
+    position: relative;
+  }
 
-      .visual-card {
-        min-height: 150px;
-        padding: 12px;
-        gap: 12px;
-        align-items: center;
-      }
+  /* Center pill exactly like desktop, not stretched */
+  .matrix-glass-text {
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 10px 26px;
+    font-size: 0.78rem;
+    letter-spacing: 0.17em;
+    white-space: nowrap;
+    text-align: center;
+  }
 
-      #matrix-canvas {
-        height: 110px;
-      }
+  /* Keep QR full-size, not reduced */
+  .qr-dummy {
+    width: 78px;
+    height: 78px;
+    right: 16px;
+    bottom: 16px;
+  }
 
-      .matrix-glass-text {
-        font-size: 0.75rem;
-        padding: 8px 18px;
-      }
+  /* ---------------------------- */
 
-      .qr-dummy {
-        width: 70px;
-        height: 70px;
-      }
+  .options-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
 
-      .options-section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.6rem;
-      }
+  .options-grid {
+    gap: 0.85rem;
+  }
 
-      .options-section-title {
-        font-size: 0.8rem;
-        letter-spacing: 0.15em;
-      }
+  .option-card {
+    padding: 0.9rem;
+    border-radius: 1.1rem;
+  }
 
-      .options-grid {
-        gap: 0.85rem;
-      }
+  .option-title {
+    font-size: 0.9rem;
+  }
 
-      .option-card {
-        padding: 0.9rem;
-        border-radius: 1.1rem;
-      }
+  .option-desc {
+    font-size: 0.78rem;
+  }
 
-      .option-title {
-        font-size: 0.9rem;
-      }
+  .option-footer {
+    font-size: 0.72rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
 
-      .option-desc {
-        font-size: 0.78rem;
-      }
+  .app-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
 
-      .option-footer {
-        font-size: 0.72rem;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.3rem;
-      }
-
-      .options-grid.list-view .option-card {
-        flex-wrap: wrap;
-        align-items: flex-start;
-      }
-
-      .options-grid.list-view .option-footer {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .app-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-
-      .footer-links {
-        flex-wrap: wrap;
-      }
-    }
   </style>
 </head>
 <body>
