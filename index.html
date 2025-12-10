@@ -213,7 +213,7 @@
       margin-top: 1rem;
     }
 
-    .hero-badge(span) {
+    .hero-badge span {
       color: #e5e7eb;
       font-weight: 500;
     }
@@ -807,17 +807,17 @@
     position: relative;
   }
 
-  /* Center pill exactly like desktop, not stretched */
+  /* Keep the pill left-aligned on mobile (matches desktop) */
   .matrix-glass-text {
     bottom: 26px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 18px;
+    transform: none;
     width: auto;
     padding: 10px 26px;
     font-size: 0.78rem;
     letter-spacing: 0.17em;
     white-space: nowrap;
-    text-align: center;
+    text-align: left;
   }
 
   /* Keep QR full-size, not reduced */
@@ -1112,8 +1112,10 @@
   </div>
 
   <script>
+    // year
     document.getElementById("year").textContent = new Date().getFullYear();
 
+    // layout toggle logic (unchanged behavior)
     const grid = document.getElementById("options-grid");
     const layoutGridBtn = document.getElementById("layout-grid");
     const layoutListBtn = document.getElementById("layout-list");
@@ -1178,30 +1180,52 @@
       }
     }
 
+    // ===== Matrix animation: improved DPR handling & visibility =====
     (function () {
       const canvas = document.getElementById("matrix-canvas");
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
 
-      const fontSize = 14;
-      const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       let width, height, columns, drops;
+      let fontSize = 14;
+      const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
       function setup() {
+        // CSS pixel size
         width = canvas.clientWidth || 300;
         height = canvas.clientHeight || 140;
-        canvas.width = width;
-        canvas.height = height;
 
-        columns = Math.floor(width / fontSize);
+        // handle high DPI screens (crisp text)
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.floor(width * dpr));
+        canvas.height = Math.max(1, Math.floor(height * dpr));
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+
+        // reset transforms and scale to DPR
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+
+        // responsive font size (keeps characters visible on narrow screens)
+        fontSize = Math.max(10, Math.floor(width / 60));
+        ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+        ctx.textBaseline = "top";
+
+        columns = Math.floor(width / fontSize) || 1;
         drops = new Array(columns).fill(1);
       }
 
       function draw() {
-        ctx.fillStyle = "rgba(1, 10, 20, 0.3)";
+        // slightly more transparent background so green characters show through
+        ctx.fillStyle = "rgba(1, 10, 20, 0.12)";
         ctx.fillRect(0, 0, width, height);
 
         ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+        ctx.textBaseline = "top";
+
+        // subtle glow for the characters
+        ctx.shadowColor = "#4ade80";
+        ctx.shadowBlur = 8;
 
         for (let i = 0; i < columns; i++) {
           const text = chars.charAt(Math.floor(Math.random() * chars.length));
@@ -1211,16 +1235,28 @@
           ctx.fillStyle = "#4ade80";
           ctx.fillText(text, x, y);
 
-          if (y > height && Math.random() > 0.95) {
+          if (y > height && Math.random() > 0.975) {
             drops[i] = 0;
           }
           drops[i]++;
         }
 
+        // reset shadow for any other drawing in the page
+        ctx.shadowBlur = 0;
+
         requestAnimationFrame(draw);
       }
 
-      window.addEventListener("resize", setup);
+      // ensure setup runs after layout; debounce resize
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          setup();
+        }, 80);
+      });
+
+      // initial run
       setup();
       requestAnimationFrame(draw);
     })();
